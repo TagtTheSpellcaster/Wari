@@ -9,6 +9,8 @@
 
 Versione per browser del wari (oware, awalé, warri), il più diffuso dei mancala. È una singola pagina HTML, senza build, senza dipendenze e senza installazione. Condivide l'architettura del Gioco Reale di Ur e del Senet: motore di gioco separato dall'interfaccia, animazioni, audio sintetizzato, storia e regole illustrate. Il wari non ha elementi casuali, quindi non ci sono dadi.
 
+[Puoi giocarlo qui](https://tagtthespellcaster.github.io/Wari/)
+
 ## Caratteristiche
 
 - **Regole abapa**, quelle delle competizioni internazionali, con la variante dei Caraibi per il grand slam selezionabile.
