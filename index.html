@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Senet v1.1
+  Wari v1.1
   Copyright (C) 2026 Alessandro Valli
   SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -8,25 +8,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Senet, il gioco egizio del passaggio, nel browser (italiano e inglese): regole CEMEA e Kendall e Bell, legnetti 3D, audio e storia.">
-<title>Senet</title>
+<meta name="description" content="Wari, il mancala dell'Africa occidentale e dei Caraibi, nel browser: regole abapa, computer a tre livelli, audio, storia e regole illustrate. Italiano e inglese. / Wari, the West African and Caribbean mancala, in the browser: abapa rules, three-level computer, audio, story and illustrated rules.">
+<title>Wari</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Marcellus&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Marcellus&display=swap" rel="stylesheet">
 <style>
-/* Layout: tavoliere e comandi nella stessa schermata su display larghi; sotto, impostazioni e cronaca; regole in fondo. Faience azzurra, giunti scuri, glifi in avorio. */
+/* Wari: legno scuro, sabbia, semi di Caesalpinia. Layout come Ur e Senet: tavoliere e comandi nella stessa schermata su display larghi. */
 :root{
-  --bg:#dbe8ea; --surface:#eaf2f3; --fg:#12303a; --muted:#47646e; --line:#b2cbd0;
-  --p0:#efe4c4; --p0-hi:#fff8e2; --p1:#2c2b35; --p1-hi:#5a5968; --cap:#b3321a;
-  --shell:#f6efd9; --halo:#12303a; --halo-board:#fff6d6;
+  --bg:#efe5d2; --surface:#f7f0e1; --fg:#2b1d11; --muted:#6a5841; --line:#d4c3a3;
+  --p0:#e0a83a; --p0-hi:#f3c566; --p1:#6aa7d8; --p1-hi:#9cc7ea; --cap:#b3321a;
+  --shell:#f6efd9; --halo:#2b1d11; --halo-board:#ffe9a8;
   --font-display:'Marcellus',Georgia,serif;
   --font-body:'Alegreya Sans',system-ui,sans-serif;
   --font-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0e1b20; --surface:#15272e; --fg:#e4f0f2; --muted:#9bb5bc; --line:#2c444c; --halo:#f6efd9; color-scheme:dark}}
+  --bg:#17100a; --surface:#221811; --fg:#f2e6d0; --muted:#b9a688; --line:#3f2f20; --halo:#f6efd9; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0e1b20; --surface:#15272e; --fg:#e4f0f2; --muted:#9bb5bc; --line:#2c444c; --halo:#f6efd9; color-scheme:dark}
+  --bg:#17100a; --surface:#221811; --fg:#f2e6d0; --muted:#b9a688; --line:#3f2f20; --halo:#f6efd9; color-scheme:dark}
 [hidden]{display:none!important}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font:400 17px/1.45 var(--font-body);
@@ -226,42 +226,58 @@ details.rules summary{cursor:pointer;font:400 21px var(--font-display);letter-sp
   .stage .pcard{padding:10px 14px}
 }
 .ver{font:500 13px var(--font-mono);letter-spacing:.06em;padding:2px 7px;border:1px solid var(--line);border-radius:5px;margin-right:2px}
-.num{fill:#eaf7f5;stroke:#0a3a4a;stroke-width:50;paint-order:stroke;font:500 190px var(--font-mono)}
-.lbl{fill:#bfe3e8;stroke:none;font:500 200px var(--font-mono);letter-spacing:.1em;text-transform:uppercase}
-.gs,.gf{fill:none;stroke-width:62;stroke-linecap:round;stroke-linejoin:round}
-.gs{stroke:rgba(4,38,50,.55);transform:translate(24px,30px)}
-.gf{stroke:#f6efd9}
-.gf .fl{fill:#f6efd9;stroke:none}
-.piece .shadow{opacity:.38}
-.piece .disc{stroke:rgba(0,0,0,.5);stroke-width:34}
-.piece.p0 .disc{fill:url(#gp0)}
-.piece.p1 .disc{fill:url(#gp1)}
-.piece .cone{fill:url(#gcone);stroke:#b6a572;stroke-width:22}
-.piece .tip{fill:#fffdf4}
-.piece .grv{fill:none;stroke:#7b7a8c;stroke-width:44}
-.piece .grv2{fill:#14131a;stroke:#7b7a8c;stroke-width:28}
-.piece .halo{stroke-width:70}
-.piece.stuck .disc{stroke:#e8573b;stroke-width:70}
-.ghost.back{stroke-dasharray:60 120}
 .sw.p0{background:var(--p0)} .sw.p1{background:var(--p1)}
-.stk{width:24px;height:64px}
-.die{width:48px;height:48px}
-.dice{gap:10px}
-.dtd .stk{width:18px;height:48px}.dtd .die{width:44px;height:44px}
+.log .dot.p0{background:var(--p0)} .log .dot.p1{background:var(--p1)}
 .dtr{grid-template-columns:minmax(120px,auto) 52px minmax(0,1fr) minmax(120px,170px)}
-.tsvg .lbl{display:block}
-.tsvg .num{display:block}
-.piece .tip,.piece .cone{pointer-events:none}
-.hide-nums .num{display:none}
-@media (max-width:640px){.lbl,.num{display:none}.tsvg .num,.tsvg .lbl{display:none}}
+#board{max-height:none}
+.stage{display:grid;gap:14px}
+.hlt{fill:#f3dfb8;font:500 170px var(--font-mono);letter-spacing:.06em;text-anchor:middle;opacity:.9;pointer-events:none}
+.hcnt{fill:#fff3d8;stroke:#2a170a;stroke-width:52;paint-order:stroke;stroke-linejoin:round;font:600 300px var(--font-mono);text-anchor:middle;pointer-events:none}
+.gcnt{fill:#fff3d8;stroke:#2a170a;stroke-width:52;paint-order:stroke;stroke-linejoin:round;font:600 360px var(--font-mono);text-anchor:middle;pointer-events:none}
+.gname{fill:#f3dfb8;font:500 170px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;text-anchor:middle;pointer-events:none}
+.matl{fill:#3b2a17;font:500 170px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;pointer-events:none}
+.hide-cnt .hcnt{display:none}
+.hide-lett .hlt{display:none}
+.seed{stroke:rgba(20,10,4,.55);stroke-width:16}
+.seed.new{animation:sdpop .38s ease-out;transform-box:fill-box;transform-origin:center}
+@keyframes sdpop{from{transform:scale(1.8);opacity:.15}to{transform:none;opacity:1}}
+.rowhl{fill:transparent;transition:fill .35s}
+.ov{fill:transparent;stroke:transparent;stroke-width:60;cursor:default}
+.ov.mv{cursor:pointer;stroke:#ffe6a1;stroke-dasharray:170 130;animation:pulse 1.6s ease-in-out infinite}
+.ov.mv:hover{animation:none;opacity:1}
+.ov.sel{stroke:#fff4c8;stroke-dasharray:none;stroke-width:90;animation:none;opacity:1}
+.ov.pth{stroke:#fff4c8;stroke-width:44;stroke-dasharray:none;opacity:.9;animation:none}
+.ov.lst{stroke:#8be08b;stroke-width:96;stroke-dasharray:none;opacity:1;animation:none}
+.ov.cpt{stroke:#ff6a4a;stroke-width:96;stroke-dasharray:none;fill:rgba(255,80,50,.22);opacity:1;animation:none}
+.ov.vd{stroke:#ff9a7a;stroke-width:70;stroke-dasharray:120 90;fill:rgba(255,120,80,.12);opacity:1;animation:none}
+.ov.hi{stroke:#fff4c8;stroke-width:90;stroke-dasharray:none;fill:rgba(255,230,160,.14);opacity:1;animation:none}
+.ov:focus{outline:none}
+.ov:focus-visible{stroke:#fff;stroke-width:90;stroke-dasharray:170 100;opacity:1}
+.pvb{fill:#f6e3b0;stroke:#4a2a12;stroke-width:34;pointer-events:none}
+.pvt{fill:#3a2010;font:700 190px var(--font-mono);text-anchor:middle;pointer-events:none}
+.hand{opacity:0;pointer-events:none;transition:transform .16s ease-out,opacity .12s}
+.hand.on{opacity:1}
+.hand .hc{fill:#3d2a18;stroke:#fff1c9;stroke-width:34}
+.hand .ht{fill:#fff3d8;font:700 250px var(--font-mono);text-anchor:middle;dominant-baseline:central}
+.hand.p0 .hc{stroke:var(--p0-hi)} .hand.p1 .hc{stroke:var(--p1-hi)}
+.tsvg .hlt,.tsvg .hcnt,.tsvg .gcnt{display:block}
+.tsvg{min-width:600px}
+.pbar{grid-column:2;height:10px;border-radius:5px;background:var(--line);position:relative;overflow:hidden}
+.pbar i{position:absolute;left:0;top:0;bottom:0;background:var(--fg);transition:width .4s}
+.pbar u{position:absolute;left:calc(100%*24/25);top:0;bottom:0;width:2px;background:var(--bg)}
+.pcard.win{border-color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--fg)}
+.sw{border-color:color-mix(in srgb,var(--fg) 30%,transparent)}
+.seg.wide span{padding:9px 12px}
+fieldset.off{opacity:.45}
+@media (max-width:640px){.tsvg .hlt{font-size:200px}}
 @media (min-width:1000px){
   body{padding-block:12px 40px}
   .wrap{max-width:1560px;gap:12px}
   .stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,24vw);gap:18px;align-items:start}
   .stage .deck{grid-template-columns:minmax(0,1fr);gap:12px}
   .stage .panel{padding:14px}
-  .stage #diceCanvas{width:100%;flex:1 1 100%}
   .stage .pcard{padding:10px 14px}
+  #board{max-height:calc(100vh - 118px)}
 }
 
 .lang{display:inline-flex;border:1.5px solid var(--fg);border-radius:8px;overflow:hidden}
@@ -272,43 +288,36 @@ details.rules summary{cursor:pointer;font:400 21px var(--font-display);letter-sp
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gwood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a34"/><stop offset=".45" stop-color="#6b4224"/><stop offset="1" stop-color="#4b2c16"/></linearGradient>
+    <radialGradient id="gpit" cx=".5" cy=".56" r=".6" fx=".62" fy=".72"><stop offset="0" stop-color="#4a2c17"/><stop offset=".62" stop-color="#2a170b"/><stop offset="1" stop-color="#120802"/></radialGradient>
+    <linearGradient id="ggr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#150a03"/><stop offset=".5" stop-color="#2d190c"/><stop offset="1" stop-color="#3d2312"/></linearGradient>
+    <radialGradient id="gsd0" cx=".34" cy=".3" r=".8"><stop offset="0" stop-color="#d9d6c2"/><stop offset=".35" stop-color="#9a9a82"/><stop offset="1" stop-color="#4c4d3d"/></radialGradient>
+    <radialGradient id="gsd1" cx=".34" cy=".3" r=".8"><stop offset="0" stop-color="#e6dcc0"/><stop offset=".35" stop-color="#a99d7d"/><stop offset="1" stop-color="#5a4f38"/></radialGradient>
+    <radialGradient id="gsd2" cx=".34" cy=".3" r=".8"><stop offset="0" stop-color="#cfd4c6"/><stop offset=".35" stop-color="#8a9484"/><stop offset="1" stop-color="#3f473d"/></radialGradient>
+    <pattern id="ptri" width="260" height="90" patternUnits="userSpaceOnUse"><path d="M0 90L65 0L130 90Z" fill="#e0a83a" opacity=".75"/><path d="M130 90L195 0L260 90Z" fill="#b8472b" opacity=".75"/></pattern>
+    <pattern id="pmat" width="60" height="60" patternUnits="userSpaceOnUse"><rect width="60" height="60" fill="#cdb48a"/><path d="M0 30H60M30 0V60" stroke="#b79b6d" stroke-width="6" opacity=".6"/></pattern>
+    <marker id="arrh0" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" fill="#fff0bd" stroke="#4a2a12" stroke-width="1"/></marker>
+    <marker id="arrhk" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff7a59"/></marker>
+  </defs>
+</svg>
 <main class="wrap">
   <header class="top">
-    <h1>Senet</h1>
-    <p class="sub"><span class="ver">v1.1</span> · Il gioco egizio del «passaggio»: trenta caselle, cinque o sette pedine a testa, un viaggio verso l'aldilà.</p>
+    <h1>Wari</h1>
+    <p class="sub"><span class="ver">v1.1</span> · Il gioco delle «case»: dodici buche, quarantotto semi e nessuna fortuna. Un mancala dell'Africa occidentale e dei Caraibi.</p>
     <div class="hbtns"><div class="lang" id="langSeg" role="group" aria-label="Lingua / Language"><button type="button" data-lang="it" aria-pressed="true">IT</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div><button type="button" class="btn alt" id="storyBtn">Avvia la storia</button><button type="button" class="btn alt" id="tutBtn">Regole illustrate</button></div>
   </header>
 
   <div class="stage">
-  <svg id="board" viewBox="0 0 10800 5160" role="group" aria-label="Tavoliere del Senet">
-    <defs>
-      <linearGradient id="gtq" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#58c6cf"/><stop offset=".55" stop-color="#2fa2b6"/><stop offset="1" stop-color="#23869f"/></linearGradient>
-      <linearGradient id="gtq2" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#2a93ad"/><stop offset=".5" stop-color="#46b9c6"/><stop offset="1" stop-color="#2b9db3"/></linearGradient>
-      <radialGradient id="gp0" cx=".36" cy=".32" r=".85"><stop offset="0" stop-color="#fffaf0"/><stop offset=".6" stop-color="#ecdfba"/><stop offset="1" stop-color="#bba978"/></radialGradient>
-      <radialGradient id="gp1" cx=".36" cy=".32" r=".85"><stop offset="0" stop-color="#5b5a6a"/><stop offset=".6" stop-color="#2b2a34"/><stop offset="1" stop-color="#14131a"/></radialGradient>
-      <radialGradient id="gcone" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fffdf6"/><stop offset="1" stop-color="#d8c998"/></radialGradient>
-      <marker id="arrh0" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto"><path d="M0 0L10 5L0 10z" fill="#fff0bd" stroke="#6a5a2a" stroke-width="1"/></marker>
-      <marker id="arrh1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto"><path d="M0 0L10 5L0 10z" fill="#12181f"/></marker>
-      <marker id="arrhk" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff7a59"/></marker>
-      <marker id="arrhm" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="3.4" markerHeight="3.4" orient="auto"><path d="M0 0L10 5L0 10z" fill="#d9eef0"/></marker>
-    </defs>
-    <g id="frame"></g><g id="tiles"></g><g id="glyphs"></g>
-    <g id="nums"></g><g id="lbls"></g>
-    <g id="pieces"></g><g id="ghosts"></g>
-  </svg>
+  <svg id="board" role="group" aria-label="Tavoliere del wari"></svg>
 
   <section class="deck">
     <div class="panel play" aria-live="polite">
-      <div class="dice-row">
-        <canvas id="diceCanvas" width="400" height="130" aria-hidden="true"></canvas>
-        <div class="dice idle" id="dice" aria-hidden="true" hidden></div>
-        <div class="result"><span class="big" id="big" data-dyn>–</span><span class="cap" id="capt" data-dyn>in attesa del primo lancio</span></div>
-      </div>
       <p class="status" id="status"></p>
       <div class="actions">
-        <button type="button" class="btn" id="rollBtn">Tira i legnetti</button>
-        <button type="button" class="btn alt" id="exitBtn" hidden>Porta fuori la pedina in 30</button>
-        <button type="button" class="btn alt" id="againBtn" hidden>Nuova partita</button>
+        <button type="button" class="btn alt" id="hintBtn" data-dyn>Suggerimento</button>
+        <button type="button" class="btn" id="againBtn" hidden>Nuova partita</button>
       </div>
     </div>
     <div class="score">
@@ -322,27 +331,40 @@ details.rules summary{cursor:pointer;font:400 21px var(--font-display);letter-sp
     <div>
       <h2>Impostazioni</h2>
       <form id="opts" autocomplete="off">
-        <fieldset><legend>Regole</legend>
-          <div class="seg">
-            <label><input type="radio" name="rules" value="kendall" checked><span>CEMEA · 4 legnetti</span></label>
-            <label><input type="radio" name="rules" value="uninerd"><span>Kendall e Bell · dado</span></label>
-          </div></fieldset>
         <fieldset><legend>Avversario</legend>
           <div class="seg">
             <label><input type="radio" name="opp" value="cpu" checked><span>Computer</span></label>
             <label><input type="radio" name="opp" value="two"><span>Due giocatori</span></label>
           </div></fieldset>
-        <fieldset><legend>Pedine a testa</legend>
+        <fieldset id="fsLevel"><legend>Livello del computer</legend>
           <div class="seg">
-            <label><input type="radio" name="npc" value="7" checked><span>7 · regole CEMEA</span></label>
-            <label><input type="radio" name="npc" value="5"><span>5 · regole Kendall e Bell</span></label>
+            <label><input type="radio" name="lvl" value="1"><span>Principiante</span></label>
+            <label><input type="radio" name="lvl" value="2" checked><span>Intermedio</span></label>
+            <label><input type="radio" name="lvl" value="3"><span>Esperto</span></label>
+          </div></fieldset>
+        <fieldset><legend>Comincia</legend>
+          <div class="seg">
+            <label><input type="radio" name="first" value="0" checked><span>Sud</span></label>
+            <label><input type="radio" name="first" value="1"><span>Nord</span></label>
+            <label><input type="radio" name="first" value="r"><span>A sorte</span></label>
+          </div></fieldset>
+        <fieldset><legend>Grand slam</legend>
+          <div class="seg wide">
+            <label><input type="radio" name="gs" value="none" checked><span>Abapa: nessuna cattura</span></label>
+            <label><input type="radio" name="gs" value="all"><span>Caraibi: si cattura</span></label>
           </div></fieldset>
         <fieldset><legend>Tavoliere</legend>
-          <label class="chk"><input type="checkbox" id="optNums" checked><span>Numera le caselle del percorso</span></label>
+          <div class="seg">
+            <label><input type="radio" name="gran" value="1" checked><span>Con granai</span></label>
+            <label><input type="radio" name="gran" value="0"><span>Senza granai</span></label>
+          </div>
+          <label class="chk"><input type="checkbox" id="optCnt" checked><span>Mostra il numero di semi in ogni casa</span></label>
+          <label class="chk"><input type="checkbox" id="optLett" checked><span>Mostra le lettere delle case (A-F, a-f)</span></label>
+          <label class="chk"><input type="checkbox" id="optPrev" checked><span>Anteprima della semina<small>Il primo tocco mostra dove cadranno i semi e che cosa si cattura; il secondo conferma la mossa.</small></span></label>
         </fieldset>
         <fieldset><legend>Audio</legend>
           <label class="chk"><input type="checkbox" id="optSfx" checked><span>Effetti sonori</span></label>
-          <label class="chk"><input type="checkbox" id="optMusic"><span>Colonna sonora<small>Musica d'ambiente di ispirazione egizia, generata dal browser. Vale anche per la storia.</small></span></label>
+          <label class="chk"><input type="checkbox" id="optMusic"><span>Colonna sonora<small>Musica d'ispirazione africana (mbira, balafon, djembe), generata dal browser. Vale anche per la storia.</small></span></label>
         </fieldset>
         <div class="actions"><button type="button" class="btn" id="newBtn">Nuova partita</button></div>
       </form>
@@ -354,61 +376,71 @@ details.rules summary{cursor:pointer;font:400 21px var(--font-display);letter-sp
   </section>
 
   <details class="rules">
-    <summary>Regole, interpretazioni e fonti</summary>
+    <summary>Regole, strategia, interpretazioni e fonti</summary>
     <div class="rcols">
       <div>
         <h3>Scopo</h3>
-        <p>Portare fuori dal tavoliere, nell'aldilà, tutte le proprie pedine prima dell'avversario. Il percorso ha 30 caselle disposte in tre file da 10 e si legge a serpentina: la prima fila da sinistra a destra (1-10), la seconda da destra a sinistra (11-20), la terza da sinistra a destra (21-30).</p>
-        <h3>Lancio</h3>
+        <p>Catturare più semi dell'avversario. I semi sono 48: chi ne cattura 25 vince. Con 24 a 24 la partita è pari.</p>
+        <h3>Tavoliere</h3>
         <ul>
-          <li>CEMEA: quattro legnetti con una faccia bianca e una nera. Si conta il numero di facce bianche: 1, 2, 3 o 4; nessuna faccia bianca vale 6.</li>
-          <li>Kendall e Bell: un dado a sei facce (1-5 e X). La X non muove nulla.</li>
-          <li>Con 1, 4 e 6 (legnetti) oppure 1, 4 e 5 (dado) si muove e si rilancia; con 2 e 3 si muove e si passa la mano.</li>
+          <li>Due file da sei case. Ogni giocatore controlla la fila vicina: Sud la fila in basso (A-F), Nord quella in alto (a-f).</li>
+          <li>Ogni casa contiene all'inizio 4 semi. I granai (se presenti) servono solo a raccogliere i semi catturati.</li>
+          <li>Le lettere seguono il senso della semina: A e a sono le case «davanti», le ultime prima di passare nella fila avversaria.</li>
         </ul>
-        <h3>Movimento</h3>
+        <h3>Semina</h3>
         <ul>
-          <li>Una pedina avanza esattamente del punteggio ottenuto. Non si può terminare su una propria pedina.</li>
-          <li>Se si termina su una pedina avversaria, le due pedine si scambiano di posto.</li>
-          <li>Due pedine dello stesso colore in caselle contigue formano un muro che non si può attaccare, ma si può superare. Tre pedine consecutive formano un muro invalicabile.</li>
-          <li>Se nessuna pedina può avanzare, se ne fa retrocedere una a scelta del punteggio ottenuto; se neppure questo è possibile, si passa.</li>
+          <li>Si sceglie una casa propria non vuota, si prendono tutti i semi e li si distribuisce uno per casa in senso antiorario.</li>
+          <li>La casa di partenza viene saltata: con 12 semi o più resta vuota (regola della dodicesima buca).</li>
+        </ul>
+        <h3>Cattura</h3>
+        <ul>
+          <li>Se l'ultimo seme cade in una casa avversaria e la porta a 2 o 3 semi, la si cattura.</li>
+          <li>Si catturano anche, a ritroso, le case avversarie precedenti che contengono 2 o 3 semi, finché la catena non si interrompe.</li>
         </ul>
       </div>
       <div>
-        <h3>Le cinque case</h3>
+        <h3>Dar da mangiare</h3>
         <ul>
-          <li>15, casa della rinascita: la pedina non può essere attaccata.</li>
-          <li>26, casa dell'abbondanza: protetta. Con un 1 la pedina può saltare la casa della malasorte e andare in 28.</li>
-          <li>27, casa della malasorte: la pedina torna in 15. Se la 15 è occupata da una pedina avversaria, il giocatore resta bloccato con tutte le pedine finché non ottiene 4, che porta fuori la pedina sventurata.</li>
-          <li>28, 29 e 30: rifugi, le pedine non si possono attaccare. Si esce con il punteggio esatto indicato: 3 dalla 28 (III), 2 dalla 29 (II), 1 dalla 30 (I).</li>
-          <li>Kendall e Bell: all'inizio del turno la pedina in 30 può uscire senza lancio, ma solo se il giocatore non ha altre pedine nella prima fila.</li>
+          <li>Se le case dell'avversario sono tutte vuote, si deve giocare una semina che ne metta almeno un seme. Se non è possibile, chi deve muovere cattura tutti i semi rimasti e la partita finisce.</li>
+          <li>Grand slam: una mossa che catturerebbe tutti i semi dell'avversario è valida, ma nella variante abapa non cattura nulla. Nella variante dei Caraibi cattura tutto, e chi ha catturato deve poi dare semi all'avversario, se può.</li>
         </ul>
-        <h3>Inizio</h3>
+        <h3>Fine della partita</h3>
         <ul>
-          <li>Le pedine partono alternate sulle prime caselle: 14 con sette pedine a testa, 10 con cinque.</li>
-          <li>CEMEA: si lancia a turno finché uno ottiene 1; chi ci riesce comincia e occupa le caselle pari. Kendall e Bell: comincia chi ottiene il punteggio più alto (la X vale meno di tutti), che occupa le caselle pari; la prima mossa spetta alla pedina in casella 10.</li>
+          <li>Un giocatore arriva a 25 semi, oppure è 24 a 24.</li>
+          <li>Se una stessa posizione si ripete per la terza volta (stallo), ciascuno prende i semi della propria fila.</li>
+        </ul>
+        <h3>Strategia</h3>
+        <ul>
+          <li><b>Mosse in mano</b>: le mosse che non danno semi all'avversario. Avere più mosse in mano dell'avversario permette di tenere i semi e di scegliere il momento dell'attacco. Spesso conviene più di una cattura piccola.</li>
+          <li>Aprire le case dal davanti al dietro; A è la prima mossa più sicura. Un seme mosso dal davanti non crea un raddoppio, che farebbe perdere due mosse in mano.</li>
+          <li>Evitare di aprire più di due case adiacenti presto: lasciano catture a catena. Aprire una casa sì e una no (A-C-E) dà però poca flessibilità.</li>
+          <li>Costruire una casa grande (12-17 semi) per fare il giro del tavoliere e tornare nella fila avversaria. Si difende tenendo due semi in una casa, in modo che la casa grande ne faccia quattro.</li>
+          <li>Se si è in svantaggio di mosse in mano, conviene complicare la posizione giocando una casa grande invece dei semi singoli.</li>
+          <li>Nel finale conta chi ha più mosse in mano e a chi tocca muovere: con pochi semi un errore costa l'intera partita.</li>
         </ul>
       </div>
       <div>
         <h3>Interpretazioni adottate</h3>
         <ul>
-          <li>Le fonti non sono univoche e le regole originali non ci sono pervenute: le versioni sono ricostruzioni. Qui sono tenute distinte la ricostruzione del gruppo CEMEA (7 pedine, legnetti) e quella di Kendall e Bell (5 pedine, dado).</li>
-          <li>Casa dell'abbondanza: «saltare la malasorte» con un 1 è interpretato come passaggio diretto dalla 26 alla 28. Le fonti non dicono altro.</li>
-          <li>Casa della malasorte con la 15 occupata da una propria pedina: la pedina riparte dalla prima casella libera. Con la 15 occupata dall'avversario si resta bloccati: così le due regole sui «pezzi propri» e sulla «15 occupata» non si contraddicono.</li>
-          <li>Il 4 che libera la pedina bloccata la porta fuori dal tavoliere e conta come pedina in salvo, come previsto dalla regola CEMEA. Le fonti non precisano altro.</li>
-          <li>Le pedine in 28, 29 e 30 lasciano la casella solo con il punteggio esatto. Il movimento all'indietro del «tiro nullo» è consentito solo verso caselle libere.</li>
-          <li>Vince chi porta fuori per primo tutte le pedine. In epoca antica, secondo l'articolo, entrambi dovevano arrivare in fondo e chi era uscito per primo assisteva l'altro: qui non è implementato.</li>
+          <li>Le regole sono quelle dell'abapa, usate nelle competizioni internazionali. La variante dei Caraibi descritta nel testo di Chamberlin differisce nel grand slam; è selezionabile nelle impostazioni.</li>
+          <li>Stallo: la partita termina alla terza ripetizione della stessa posizione con lo stesso giocatore di turno, o dopo 400 mosse. Ciascun giocatore prende i semi della propria fila. L'assegnazione automatica sostituisce l'accordo tra i giocatori previsto dal gioco da tavolo.</li>
+          <li>Se un giocatore resta senza semi per effetto di una cattura (variante dei Caraibi), il turno torna a chi ha catturato, che deve dare da mangiare.</li>
+          <li>Il computer usa una ricerca alfa-beta con valutazione basata su semi catturati, mosse in mano e case vulnerabili. Il livello Esperto è limitato da un tempo massimo per mossa, quindi non è un giocatore perfetto.</li>
+          <li>Il tavoliere «senza granai» tiene i semi catturati su un tappetino davanti al giocatore, in sostituzione della mano.</li>
         </ul>
         <h3>Fonti</h3>
         <ul>
-          <li>Voce «Senet», Wikipedia, che riporta le regole del gruppo di ricerca sul gioco dei CEMEA (set CEMEA).</li>
-          <li>Regole di Timothy Kendall e R.C. Bell, nell'adattamento UniNerd (set Kendall e Bell).</li>
+          <li>Voce «Wari», Wikipedia in italiano (regole dell'abapa).</li>
+          <li>Voce «Oware», Wikipedia in inglese (regole dell'abapa).</li>
+          <li>Voci «Mancala», Wikipedia in italiano e in inglese (storia e famiglia dei mancala).</li>
+          <li>David Chamberlin, «How to play Warri» (regole dei Caraibi e strategia).</li>
         </ul>
       </div>
     </div>
   </details>
 </main>
 
-<div class="story" id="story" role="dialog" aria-modal="true" aria-label="La storia del Senet" hidden>
+<div class="story" id="story" role="dialog" aria-modal="true" aria-label="La storia del wari" hidden>
   <canvas id="stCv" aria-hidden="true"></canvas>
   <div class="st-bar t"></div><div class="st-bar b"></div>
   <div class="st-card" id="stCard"><div class="st-art" id="stArt"></div><p class="st-kick" id="stKick"></p><h2 class="st-title" id="stTitle"></h2><p class="st-body" id="stBody"></p></div>
@@ -427,10 +459,6 @@ details.rules summary{cursor:pointer;font:400 21px var(--font-display);letter-sp
   <div class="tut-box" id="tutBox" tabindex="-1">
     <div class="tut-head">
       <div><span class="eyebrow" id="tutStep"></span><h2 id="tutTitle">Regole illustrate</h2></div>
-      <div class="seg" id="tutSeg" role="radiogroup" aria-label="Set di regole">
-        <label><input type="radio" name="trules" value="kendall"><span>CEMEA</span></label>
-        <label><input type="radio" name="trules" value="uninerd"><span>Kendall e Bell</span></label>
-      </div>
       <button type="button" class="btn alt" id="tutClose">Chiudi</button>
     </div>
     <div class="tut-body">
@@ -446,209 +474,192 @@ details.rules summary{cursor:pointer;font:400 21px var(--font-display);letter-sp
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-var LANGKEY='senet-lang';
+var LANGKEY='wari-lang';
 var LANG=(function(){try{var v=localStorage.getItem(LANGKEY);if(v==='it'||v==='en')return v;}catch(e){}return /^it/i.test(navigator.language||'')?'it':'en';})();
 function _(it,en){return LANG==='en'?en:it;}
-var GAME_TITLE={it:'Senet',en:'Senet'};
+var GAME_TITLE={it:'Wari',en:'Wari'};
 document.title=GAME_TITLE[LANG];
 document.documentElement.lang=LANG;
 
 </script>
 <script>
 /*ENGINE_START*/
+/* Wari (abapa). Case 0-5: Sud, da sinistra a destra (0 = F, 5 = A). Case 6-11: Nord, da destra a sinistra (6 = f, 11 = a).
+   La semina procede per indici crescenti (senso antiorario). Nessun elemento casuale, tranne la scelta del primo giocatore. */
 if (typeof _ === 'undefined') { var _ = (it) => it; }
-let NAMES = [_('Avorio', 'Ivory'), _('Ebano', 'Ebony')];
-const OUT = 31;
-const SAFE = [15, 26, 28, 29, 30];
-const EXIT_NEED = { 28: 3, 29: 2, 30: 1 };
-const AGAIN = { kendall: [1, 4, 6], uninerd: [1, 4, 5] };
-const nDev = st => (st.rules === 'kendall' ? 4 : 1);
+const NAMES = [_('Sud', 'South'), _('Nord', 'North')];
+const LETT = ['F', 'E', 'D', 'C', 'B', 'A', 'f', 'e', 'd', 'c', 'b', 'a'];
+const mine = (p, h) => (p === 0 ? h < 6 : h >= 6);
+const side = (b, p) => { let s = 0; for (let i = p * 6; i < p * 6 + 6; i++) s += b[i]; return s; };
 
 function newState(o) {
-  const n = o.n || (o.rules === 'kendall' ? 7 : 5), first = o.first || 0, pieces = [];
-  for (let p = 0; p < 2; p++) for (let i = 0; i < n; i++) {
-    const even = p === first;
-    pieces.push({ id: p * n + i, owner: p, pos: even ? 2 * (i + 1) : 2 * i + 1 });
-  }
-  return {
-    rules: o.rules, n, turn: first, first, pieces, phase: 'roll', roll: null, moves: [],
-    again: false, newTurn: true, firstMove: true, stuck: [null, null], winner: null, turns: 0, fx: null
+  o = o || {};
+  const st = {
+    b: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], sc: [0, 0], turn: o.first || 0, first: o.first || 0,
+    gs: o.gs === 'all' ? 'all' : 'none', phase: 'move', winner: null, moves: [], feedOnly: false,
+    hist: {}, ply: 0, fx: null, over: null, skipped: null
   };
+  settle(st);
+  return st;
 }
 
-/* lancio: kendall = 4 legnetti (true = faccia bianca); uninerd = dado a sei facce (la 6 è la X) */
-function rollThrow(st, rng) {
-  if (st.rules === 'kendall') {
-    const f = []; for (let i = 0; i < 4; i++) f.push(rng() < 0.5);
-    const w = f.filter(Boolean).length;
-    return { faces: f, v: w === 0 ? 6 : w };
+/* simula una semina sul vettore b (modificato); restituisce {path, last, caps:[{h,n}], gain, grand} */
+function sow(b, h, p, gs) {
+  let n = b[h]; b[h] = 0; const path = []; let i = h;
+  while (n > 0) { i = (i + 1) % 12; if (i === h) continue; b[i]++; n--; path.push(i); }
+  const last = i, caps = []; let gain = 0, grand = false;
+  if (!mine(p, last) && (b[last] === 2 || b[last] === 3)) {
+    let j = last;
+    while (j >= 0 && !mine(p, j) && (b[j] === 2 || b[j] === 3) && (p === 0 ? j >= 6 : j <= 5)) { caps.push({ h: j, n: b[j] }); gain += b[j]; j--; }
+    if (gain === side(b, 1 - p)) { grand = true; if (gs === 'none') { return { path, last, caps: [], gain: 0, grand: true, void: caps }; } }
+    for (const c of caps) b[c.h] = 0;
   }
-  const f = 1 + Math.floor(rng() * 6);
-  return { faces: [f], v: f === 6 ? 0 : f };
-}
-/* v: valore di movimento (kendall 1,2,3,4,6; uninerd 1-5, 0 = X) */
-function rankOf(st, v) { return v; }
-
-function describeRoll(st, v) {
-  const again = AGAIN[st.rules].includes(v);
-  let head;
-  if (st.rules === 'kendall') head = v === 6 ? _('Nessuna faccia bianca: 6', 'No white faces: 6') : v + (v === 1 ? _(' faccia bianca', ' white face') : _(' facce bianche', ' white faces')) + ': ' + v;
-  else head = v === 0 ? _('Dado: X', 'Die: X') : _('Dado: ', 'Die: ') + v;
-  let text;
-  if (v === 0) text = _('Il turno passa senza alcuna azione.', 'The turn passes with no action.');
-  else text = _('Muovi una pedina di ', 'Move a piece ') + v + (v === 1 ? _(' casella', ' square') : _(' caselle', ' squares')) + (again ? _(' e rilancia.', ' and throw again.') : _(' e passa la mano.', ' and pass the turn.'));
-  return { head, text, again };
+  return { path, last, caps, gain, grand };
 }
 
-const at = (st, s) => st.pieces.find(x => x.pos === s) || null;
-function runLen(st, o, s) {
-  let a = s, b = s;
-  while (a > 1 && at(st, a - 1) && at(st, a - 1).owner === o) a--;
-  while (b < 30 && at(st, b + 1) && at(st, b + 1).owner === o) b++;
-  return b - a + 1;
-}
-function immune(st, s) {
-  const pc = at(st, s); if (!pc) return false;
-  return SAFE.includes(s) || runLen(st, pc.owner, s) >= 2;
-}
-function wallBlocks(st, p, a, b) {
-  for (let s = a; s <= b; s++) { const pc = at(st, s); if (pc && pc.owner !== p && runLen(st, pc.owner, s) >= 3) return true; }
-  return false;
-}
-function stuckPiece(st, p) {
-  const id = st.stuck[p]; if (id == null) return null;
-  const pc = st.pieces[id]; return pc.pos === 27 ? pc : null;
-}
-const freeAfter = st => { for (let s = 1; s <= 30; s++) if (!at(st, s)) return s; return null; };
-
-function genMoves(st, v) {
-  const p = st.turn, mine = st.pieces.filter(x => x.owner === p && x.pos < OUT), moves = [];
-  if (v === 0) return moves;
-  const sp = stuckPiece(st, p);
-  if (sp) { if (v === 4) moves.push({ kind: 'exit', id: sp.id, from: 27, to: OUT, cap: null, v }); return moves; }
-  for (const pc of mine) {
-    const s = pc.pos;
-    if (EXIT_NEED[s]) { if (v === EXIT_NEED[s]) moves.push({ kind: 'exit', id: pc.id, from: s, to: OUT, cap: null, v }); continue; }
-    const targets = [s + v]; if (s === 26 && v === 1) targets.push(28);
-    for (const t of targets) {
-      if (t > 30) continue;
-      if (wallBlocks(st, p, s + 1, t)) continue;
-      const q = at(st, t);
-      if (q) { if (q.owner === p || immune(st, t)) continue; }
-      moves.push({ kind: t === s + v ? 'move' : 'jump', id: pc.id, from: s, to: t, cap: q ? q.id : null, v });
-    }
+function legalMoves(st) {
+  const p = st.turn, ms = [], oppEmpty = side(st.b, 1 - p) === 0;
+  for (let h = p * 6; h < p * 6 + 6; h++) {
+    if (st.b[h] === 0) continue;
+    const b = st.b.slice(), r = sow(b, h, p, st.gs);
+    r.h = h; r.n = st.b[h]; r.feeds = r.path.some(x => !mine(p, x));
+    if (oppEmpty && !r.feeds) continue;
+    ms.push(r);
   }
-  let res = moves;
-  if (st.firstMove && st.rules === 'uninerd') { const f = moves.filter(m => m.from === 10); if (f.length) res = f; }
-  if (!res.length) {
-    for (const pc of mine) {
-      const s = pc.pos, t = s - v;
-      if (t < 1 || at(st, t) || wallBlocks(st, p, t, s - 1)) continue;
-      res.push({ kind: 'back', id: pc.id, from: s, to: t, cap: null, v });
-    }
+  return ms;
+}
+
+function over(st, reason) {
+  st.phase = 'over'; st.over = reason; st.moves = [];
+  const a = st.sc[0], b = st.sc[1];
+  st.winner = a > b ? 0 : (b > a ? 1 : 'draw');
+}
+function posKey(st) { return st.b.join(',') + '|' + st.turn; }
+
+/* sistema il turno dopo una mossa: vittoria, ripetizione, carestia e dovere di dar da mangiare */
+function settle(st) {
+  if (st.sc[0] >= 25 || st.sc[1] >= 25) { over(st, 'score'); return; }
+  const k = posKey(st); st.hist[k] = (st.hist[k] || 0) + 1;
+  if (st.hist[k] >= 3 || st.ply >= 400) {
+    const s0 = side(st.b, 0), s1 = side(st.b, 1);
+    st.sc[0] += s0; st.sc[1] += s1; st.sweep = [s0, s1];
+    for (let i = 0; i < 12; i++) st.b[i] = 0;
+    over(st, 'cycle'); return;
   }
-  return res;
-}
-
-function endTurn(st) {
-  st.turn = 1 - st.turn; st.phase = 'roll'; st.moves = []; st.again = false; st.newTurn = true; st.turns++;
-}
-
-function applyRoll(st, th) {
-  const p = st.turn, ev = [], v = th.v;
-  st.fx = null;
-  const info = { p, faces: th.faces, v, ev, again: AGAIN[st.rules].includes(v) };
-  st.roll = info;
-  st.moves = genMoves(st, v);
-  if (!st.moves.length) {
-    ev.push({ p, msg: NAMES[p] + (v === 0 ? _(': dado X, il turno passa.', ': die X, the turn passes.') : _(': nessuna mossa possibile, il turno passa.', ': no legal move, the turn passes.')) });
-    st.firstMove = false; endTurn(st); info.status = 'pass';
-  } else { st.phase = 'move'; info.status = 'move'; }
-  return info;
-}
-
-function freeExit(st) {
-  if (st.rules !== 'uninerd' || st.phase !== 'roll' || !st.newTurn || st.winner != null) return null;
-  const p = st.turn, pc = st.pieces.find(x => x.owner === p && x.pos === 30);
-  if (!pc) return null;
-  if (st.pieces.some(x => x.owner === p && x.pos >= 1 && x.pos <= 10)) return null;
-  return pc.id;
-}
-function applyFreeExit(st) {
-  const p = st.turn, pc = st.pieces[freeExit(st)], ev = []; st.fx = { mover: pc.id };
-  pc.pos = OUT; st.newTurn = false;
-  const n = st.pieces.filter(x => x.owner === p && x.pos === OUT).length;
-  ev.push({ p, msg: NAMES[p] + _(' porta nell\'aldilà la pedina in casella 30 (', ' moves the piece on square 30 into the afterlife (') + n + '/' + st.n + ').' });
-  if (n === st.n) { st.phase = 'over'; st.winner = p; ev.push({ p, msg: NAMES[p] + _(' vince la partita.', ' wins the game.') }); }
-  return ev;
+  st.skipped = null;
+  if (side(st.b, st.turn) === 0) { st.skipped = st.turn; st.turn = 1 - st.turn; }
+  const ms = legalMoves(st);
+  st.feedOnly = side(st.b, 1 - st.turn) === 0;
+  if (!ms.length) {
+    const p = st.turn, s = side(st.b, p);
+    st.sc[p] += s; st.sweep = [0, 0]; st.sweep[p] = s;
+    for (let i = 0; i < 12; i++) st.b[i] = 0;
+    over(st, 'nofeed'); return;
+  }
+  st.moves = ms;
 }
 
 function applyMove(st, m) {
-  const p = st.turn, ev = [], pc = st.pieces[m.id], v = st.roll.v;
-  st.fx = { mover: pc.id };
-  st.firstMove = false;
-  if (m.kind === 'exit') {
-    pc.pos = OUT;
-    const n = st.pieces.filter(x => x.owner === p && x.pos === OUT).length;
-    ev.push({ p, msg: NAMES[p] + (m.from === 27 ? _(' esce con un 4 dalla casella della malasorte', ' leaves the House of Misfortune with a 4') : _(' porta nell\'aldilà la pedina in casella ', ' moves the piece on square ') + m.from + _('', ' into the afterlife')) + ' (' + n + '/' + st.n + ').' });
-  } else {
-    if (m.kind === 'back') ev.push({ p, msg: NAMES[p] + _(' retrocede dalla casella ', ' moves back from square ') + m.from + _(' alla ', ' to ') + m.to + '.' });
-    else if (m.kind === 'jump') ev.push({ p, msg: NAMES[p] + _(' salta la casa della malasorte: dalla 26 alla 28.', ' skips the House of Misfortune: from 26 to 28.') });
-    else ev.push({ p, msg: NAMES[p] + _(' muove dalla casella ', ' moves from square ') + m.from + _(' alla ', ' to ') + m.to + '.' });
-    if (m.cap != null) {
-      const q = st.pieces[m.cap]; q.pos = m.from;
-      ev.push({ p, msg: NAMES[p] + _(' attacca: ', ' attacks: ') + NAMES[1 - p] + _(' e ', ' and ') + NAMES[p] + _(' si scambiano di posto (', ' swap places (') + m.to + _(' e ', ' and ') + m.from + ').' });
-    }
-    pc.pos = m.to;
-    if (pc.pos === 27) {
-      const o = at(st, 15);
-      if (!o) { st.fx.via = 27; pc.pos = 15; ev.push({ p, msg: _('Casa della malasorte: la pedina di ', 'House of Misfortune: the piece of ') + NAMES[p] + _(' torna alla casa della rinascita (15).', ' returns to the House of Rebirth (15).') }); }
-      else if (o.owner === p) {
-        const f = freeAfter(st); st.fx.via = 27; pc.pos = f;
-        ev.push({ p, msg: _('Casa della malasorte: la 15 è occupata da una pedina di ', 'House of Misfortune: square 15 is occupied by a piece of ') + NAMES[p] + _(', la pedina riparte dalla casella ', ', the piece restarts from square ') + f + '.' });
-      } else { st.stuck[p] = pc.id; ev.push({ p, msg: _('Casa della malasorte: la 15 è occupata da ', 'House of Misfortune: square 15 is occupied by ') + NAMES[1 - p] + '. ' + NAMES[p] + _(' resta bloccato finché non ottiene 4.', ' is blocked until a 4 is thrown.') }); }
-    }
+  const p = st.turn, ev = [], before = st.b.slice();
+  const r = sow(st.b, m.h, p, st.gs);
+  st.sc[p] += r.gain; st.ply++;
+  st.fx = { p, from: m.h, n: m.n, path: r.path, last: r.last, caps: r.caps, gain: r.gain, grand: r.grand, voided: r.void || null, before };
+  const nm = NAMES[p], L = LETT[m.h];
+  let t = nm + _(' gioca ', ' plays ') + L + ' (' + m.n + (m.n === 1 ? _(' seme', ' seed') : _(' semi', ' seeds')) + _('), ultimo seme in ', '), last seed in ') + LETT[r.last] + '.';
+  if (r.gain) t += _(' Cattura ', ' Captures ') + r.caps.map(c => c.n).join(' + ') + (r.caps.length > 1 ? ' = ' + r.gain : '') + (r.gain === 1 ? _(' seme.', ' seed.') : _(' semi.', ' seeds.'));
+  else if (r.grand) t += _(' Grand slam: nessuna cattura.', ' Grand slam: no capture.');
+  ev.push({ p, msg: t });
+  if (r.grand && r.gain) ev.push({ p, msg: _('Grand slam: ' + nm + ' cattura tutti i semi avversari e dovrà dar da mangiare.', 'Grand slam: ' + nm + ' captures all the opponent\'s seeds and must then feed the opponent.') });
+  st.turn = 1 - p;
+  settle(st);
+  if (st.skipped != null && st.phase !== 'over') ev.push({ p: null, msg: _(NAMES[st.skipped] + ' non ha più semi: ' + NAMES[st.turn] + ' deve giocare una semina che ne dia all\'avversario.', NAMES[st.skipped] + ' has no seeds left: ' + NAMES[st.turn] + ' must play a sowing that gives the opponent seeds.') });
+  else if (st.phase !== 'over' && st.feedOnly) ev.push({ p: null, msg: _(NAMES[1 - st.turn] + ' non ha semi: ' + NAMES[st.turn] + ' deve dargli da mangiare.', NAMES[1 - st.turn] + ' has no seeds: ' + NAMES[st.turn] + ' must feed the opponent.') });
+  if (st.phase === 'over') {
+    if (st.over === 'nofeed') ev.push({ p: null, msg: _(NAMES[st.turn] + ' non può dare semi all\'avversario: cattura quelli rimasti (' + (st.sweep[st.turn]) + ') e la partita finisce.', NAMES[st.turn] + ' cannot give the opponent any seeds: captures the remaining ones (' + (st.sweep[st.turn]) + ') and the game ends.') });
+    else if (st.over === 'cycle') ev.push({ p: null, msg: _('Posizione ripetuta: ciascuno prende i semi della propria fila (' + st.sweep[0] + ' a ' + NAMES[0] + ', ' + st.sweep[1] + ' a ' + NAMES[1] + ').', 'Position repeated: each player takes the seeds on their own row (' + st.sweep[0] + ' to ' + NAMES[0] + ', ' + st.sweep[1] + ' to ' + NAMES[1] + ').') });
+    ev.push({ p: st.winner === 'draw' ? null : st.winner, msg: st.winner === 'draw' ? _('Pareggio ' + st.sc[0] + ' a ' + st.sc[1] + '.', 'Draw, ' + st.sc[0] + ' to ' + st.sc[1] + '.') : _(NAMES[st.winner] + ' vince ' + st.sc[st.winner] + ' a ' + st.sc[1 - st.winner] + '.', NAMES[st.winner] + ' wins ' + st.sc[st.winner] + ' to ' + st.sc[1 - st.winner] + '.') });
   }
-  if (st.pieces.filter(x => x.owner === p && x.pos === OUT).length === st.n) {
-    st.phase = 'over'; st.winner = p; st.moves = [];
-    ev.push({ p, msg: NAMES[p] + _(' vince la partita.', ' wins the game.') }); return ev;
-  }
-  if (AGAIN[st.rules].includes(v)) {
-    st.phase = 'roll'; st.moves = []; st.again = true; st.newTurn = false;
-    ev.push({ p, msg: NAMES[p] + _(' rilancia.', ' throws again.') });
-  } else endTurn(st);
   return ev;
 }
 
-function cpuChoose(st, rng) {
-  const p = st.turn; let best = 0, bs = -1e9;
-  st.moves.forEach((m, i) => {
-    let s = 0;
-    if (m.kind === 'exit') s += 100;
-    else {
-      const adv = m.to - m.from; s += adv * 2.2;
-      if (m.kind === 'back') s -= 10;
-      if (m.cap != null) s += 22 + (m.to - m.from) * 1.5;
-      if (SAFE.includes(m.to)) s += m.to === 15 ? 8 : 16;
-      if (m.to === 27) s -= at(st, 15) && at(st, 15).owner !== p ? 90 : 35;
-      if (m.kind === 'jump') s += 18;
-      if (EXIT_NEED[m.to]) s += 6;
-      /* muri */
-      const mine = s2 => { const q = at(st, s2); return q && q.owner === p && q.id !== m.id; };
-      const nb = (mine(m.to - 1) ? 1 : 0) + (mine(m.to + 1) ? 1 : 0);
-      const nbOld = (mine(m.from - 1) ? 1 : 0) + (mine(m.from + 1) ? 1 : 0);
-      s += nb * 9 - nbOld * 7;
-      if (m.from <= 10 && m.to > 10) s += 2;
-      if (m.from === 15 || m.from === 26) s -= 4;
-    }
-    s += rng() * 3;
-    if (s > bs) { bs = s; best = i; }
-  });
+/* ---------- computer ---------- */
+function mih(b, p) { /* mosse in mano: case che si possono giocare senza dare semi all'avversario */
+  let c = 0;
+  for (let i = 0; i < 6; i++) {
+    const h = p * 6 + i, n = b[h]; if (!n) continue;
+    const toEnd = 5 - i; if (n <= toEnd) c++;
+  }
+  return c;
+}
+function evalPos(b, sc, p, gs) { /* dal punto di vista di p */
+  const o = 1 - p;
+  let v = 100 * (sc[p] - sc[o]);
+  v += 7 * (mih(b, p) - mih(b, o));
+  let vul = 0, big = 0;
+  for (let i = 0; i < 6; i++) {
+    const a = b[p * 6 + i], c = b[o * 6 + i];
+    if (a === 1 || a === 2) vul -= 4 + (i >= 3 ? 0 : 0); /* case con 1-2 semi: bersagli */
+    if (c === 1 || c === 2) vul += 4;
+    if (a >= 12) big += 5; if (c >= 12) big -= 5;
+  }
+  v += vul + big + 1.5 * (side(b, p) - side(b, o));
+  return v;
+}
+function search(b, sc, turn, depth, alpha, beta, root, gs, nodes) {
+  /* negamax; restituisce valore dal punto di vista di turn */
+  if ((++nodes.n & 511) === 0 && nodes.dl && Date.now() > nodes.dl) throw 'T';
+  if (sc[0] >= 25 || sc[1] >= 25) { const d = sc[turn] - sc[1 - turn]; return d > 0 ? 10000 + depth : (d < 0 ? -10000 - depth : 0); }
+  if (side(b, turn) === 0) { if (side(b, 1 - turn) === 0) return 0; return -search(b, sc, 1 - turn, depth, -beta, -alpha, false, gs, nodes); }
+  const p = turn;
+  const oppEmpty = side(b, 1 - p) === 0, cand = [];
+  for (let h = p * 6; h < p * 6 + 6; h++) if (b[h]) cand.push(h);
+  const opts = [];
+  for (const h of cand) {
+    const nb = b.slice(), r = sow(nb, h, p, gs);
+    if (oppEmpty && !r.path.some(x => !mine(p, x))) continue;
+    opts.push({ h, nb, g: r.gain });
+  }
+  if (!opts.length) { /* chi non può dar da mangiare prende i propri semi */
+    const s = side(b, p), d = (sc[p] + s) - sc[1 - p];
+    return d > 0 ? 10000 : (d < 0 ? -10000 : 0);
+  }
+  if (depth <= 0) return evalPos(b, sc, p, gs);
+  opts.sort((x, y) => y.g - x.g);
+  let best = -1e9;
+  for (const o of opts) {
+    const nsc = sc.slice(); nsc[p] += o.g;
+    const v = -search(o.nb, nsc, 1 - p, depth - 1, -beta, -alpha, false, gs, nodes);
+    if (v > best) best = v; if (v > alpha) alpha = v; if (alpha >= beta) break;
+  }
+  return best;
+}
+const LEVELS = { 1: { d: 1, noise: 40, ms: 0 }, 2: { d: 5, noise: 6, ms: 0 }, 3: { d: 14, noise: 0, ms: 380 } };
+function rank(st, level) {
+  const L = LEVELS[level] || LEVELS[2], p = st.turn, t0 = Date.now(); let out = null;
+  const nodes = { n: 0, dl: L.ms ? t0 + L.ms : 0 };
+  for (let d = 1; d <= L.d; d++) {
+    const cur = [];
+    try {
+      for (let i = 0; i < st.moves.length; i++) {
+        const m = st.moves[i], nb = st.b.slice(), r = sow(nb, m.h, p, st.gs), nsc = st.sc.slice(); nsc[p] += r.gain;
+        cur.push({ i, v: -search(nb, nsc, 1 - p, d - 1, -1e9, 1e9, false, st.gs, nodes) });
+      }
+    } catch (e) { if (e !== 'T') throw e; break; }
+    out = cur;
+    if (L.ms && Date.now() - t0 > L.ms * .5) break;
+  }
+  return out || st.moves.map((m, i) => ({ i, v: m.gain }));
+}
+function cpuChoose(st, level, rng) {
+  if (st.moves.length === 1) return 0;
+  const L = LEVELS[level] || LEVELS[2], r = rank(st, level);
+  let best = 0, bv = -1e9;
+  r.forEach(x => { const v = x.v + (L.noise ? (rng() - .5) * 2 * L.noise : 0) + (st.moves[x.i].gain ? 0 : 0); if (v > bv) { bv = v; best = x.i; } });
   return best;
 }
 /*ENGINE_END*/
+if (typeof module !== 'undefined') module.exports = { NAMES, LETT, newState, legalMoves, applyMove, cpuChoose, rank, sow, side, settle, search, mih };
 
 </script>
 <script>
@@ -657,7 +668,7 @@ function cpuChoose(st, rng) {
 const $=(s,r)=>(r||document).querySelector(s);
 /* ===== lingua: selettore IT/EN, traduzione dell'interfaccia statica, ganci per i testi dinamici ===== */
 const langHooks=[];
-const I18N_EN={"<span class=\"ver\">v1.1<\/span> · Il gioco egizio del «passaggio»: trenta caselle, cinque o sette pedine a testa, un viaggio verso l'aldilà.": "<span class=\"ver\">v1.1<\/span> · The Egyptian game of the “passage”: thirty squares, five or seven pieces each, a journey to the afterlife.", "Avvia la storia": "Start the story", "Regole illustrate": "Illustrated rules", "Tavoliere del Senet": "Senet board", "Tira i legnetti": "Throw the casting sticks", "Porta fuori la pedina in 30": "Bear off the piece on 30", "Nuova partita": "New game", "Impostazioni": "Settings", "Regole": "Rules", "CEMEA · 4 legnetti": "CEMEA · 4 casting sticks", "Kendall e Bell · dado": "Kendall and Bell · die", "Avversario": "Opponent", "Computer": "Computer", "Due giocatori": "Two players", "Pedine a testa": "Pieces per side", "7 · regole CEMEA": "7 · CEMEA rules", "5 · regole Kendall e Bell": "5 · Kendall and Bell rules", "Tavoliere": "Board", "Numera le caselle del percorso": "Number the squares of the path", "Audio": "Audio", "Effetti sonori": "Sound effects", "Colonna sonora<small>Musica d'ambiente di ispirazione egizia, generata dal browser. Vale anche per la storia.<\/small>": "Soundtrack<small>Ambient music with an Egyptian flavour, generated by the browser. It also applies to the story.<\/small>", "Cronaca": "Log", "Regole, interpretazioni e fonti": "Rules, interpretations and sources", "Scopo": "Objective", "Portare fuori dal tavoliere, nell'aldilà, tutte le proprie pedine prima dell'avversario. Il percorso ha 30 caselle disposte in tre file da 10 e si legge a serpentina: la prima fila da sinistra a destra (1-10), la seconda da destra a sinistra (11-20), la terza da sinistra a destra (21-30).": "Bear all your pieces off the board, into the afterlife, before your opponent. The path has 30 squares arranged in three rows of 10 and is read in boustrophedon order: the first row left to right (1-10), the second row right to left (11-20), the third row left to right (21-30).", "Lancio": "Throw", "CEMEA: quattro legnetti con una faccia bianca e una nera. Si conta il numero di facce bianche: 1, 2, 3 o 4; nessuna faccia bianca vale 6.": "CEMEA: four casting sticks, each with a white and a black face. The score is the number of white faces: 1, 2, 3 or 4; no white face counts as 6.", "Kendall e Bell: un dado a sei facce (1-5 e X). La X non muove nulla.": "Kendall and Bell: a six-sided die (1-5 and X). The X moves nothing.", "Con 1, 4 e 6 (legnetti) oppure 1, 4 e 5 (dado) si muove e si rilancia; con 2 e 3 si muove e si passa la mano.": "With 1, 4 and 6 (casting sticks) or 1, 4 and 5 (die) you move and throw again; with 2 and 3 you move and pass the turn.", "Movimento": "Movement", "Una pedina avanza esattamente del punteggio ottenuto. Non si può terminare su una propria pedina.": "A piece advances exactly the score obtained. You may not end on one of your own pieces.", "Se si termina su una pedina avversaria, le due pedine si scambiano di posto.": "If you end on an opposing piece, the two pieces swap places.", "Due pedine dello stesso colore in caselle contigue formano un muro che non si può attaccare, ma si può superare. Tre pedine consecutive formano un muro invalicabile.": "Two pieces of the same colour on adjacent squares form a wall that cannot be attacked but can be passed. Three consecutive pieces form a wall that cannot be passed.", "Se nessuna pedina può avanzare, se ne fa retrocedere una a scelta del punteggio ottenuto; se neppure questo è possibile, si passa.": "If no piece can advance, you must move one piece of your choice backwards by the score obtained; if that is not possible either, you pass.", "Le cinque case": "The five houses", "15, casa della rinascita: la pedina non può essere attaccata.": "15, House of Rebirth: the piece cannot be attacked.", "26, casa dell'abbondanza: protetta. Con un 1 la pedina può saltare la casa della malasorte e andare in 28.": "26, House of Abundance: protected. With a 1 the piece may skip the House of Misfortune and go to 28.", "27, casa della malasorte: la pedina torna in 15. Se la 15 è occupata da una pedina avversaria, il giocatore resta bloccato con tutte le pedine finché non ottiene 4, che porta fuori la pedina sventurata.": "27, House of Misfortune: the piece goes back to 15. If 15 is occupied by an opposing piece, the player is blocked with all pieces until a 4 is thrown, which bears off the unlucky piece.", "28, 29 e 30: rifugi, le pedine non si possono attaccare. Si esce con il punteggio esatto indicato: 3 dalla 28 (III), 2 dalla 29 (II), 1 dalla 30 (I).": "28, 29 and 30: refuges, the pieces cannot be attacked. A piece leaves only with the exact score shown: 3 from 28 (III), 2 from 29 (II), 1 from 30 (I).", "Kendall e Bell: all'inizio del turno la pedina in 30 può uscire senza lancio, ma solo se il giocatore non ha altre pedine nella prima fila.": "Kendall and Bell: at the start of the turn the piece on 30 may leave without a throw, but only if the player has no other pieces in the first row.", "Inizio": "Setup", "Le pedine partono alternate sulle prime caselle: 14 con sette pedine a testa, 10 con cinque.": "The pieces start alternating on the first squares: 14 with seven pieces each, 10 with five.", "CEMEA: si lancia a turno finché uno ottiene 1; chi ci riesce comincia e occupa le caselle pari. Kendall e Bell: comincia chi ottiene il punteggio più alto (la X vale meno di tutti), che occupa le caselle pari; la prima mossa spetta alla pedina in casella 10.": "CEMEA: players throw in turn until one gets a 1; whoever succeeds starts and occupies the even squares. Kendall and Bell: whoever gets the highest score starts (X is lower than all), and occupies the even squares; the first move must be made by the piece on square 10.", "Interpretazioni adottate": "Adopted interpretations", "Le fonti non sono univoche e le regole originali non ci sono pervenute: le versioni sono ricostruzioni. Qui sono tenute distinte la ricostruzione del gruppo CEMEA (7 pedine, legnetti) e quella di Kendall e Bell (5 pedine, dado).": "The sources are not unambiguous and the original rules have not survived: the versions are reconstructions. Here the CEMEA group's reconstruction (7 pieces, casting sticks) and that of Kendall and Bell (5 pieces, die) are kept separate.", "Casa dell'abbondanza: «saltare la malasorte» con un 1 è interpretato come passaggio diretto dalla 26 alla 28. Le fonti non dicono altro.": "House of Abundance: “skipping the misfortune” with a 1 is interpreted as a direct move from 26 to 28. The sources say nothing further.", "Casa della malasorte con la 15 occupata da una propria pedina: la pedina riparte dalla prima casella libera. Con la 15 occupata dall'avversario si resta bloccati: così le due regole sui «pezzi propri» e sulla «15 occupata» non si contraddicono.": "House of Misfortune with 15 occupied by one of the player's own pieces: the piece restarts from the first free square. With 15 occupied by the opponent the player stays blocked: this way the two rules on “own pieces” and on “occupied 15” do not contradict each other.", "Il 4 che libera la pedina bloccata la porta fuori dal tavoliere e conta come pedina in salvo, come previsto dalla regola CEMEA. Le fonti non precisano altro.": "The 4 that frees the blocked piece bears it off the board and counts as a piece safely out, as provided by the CEMEA rule. The sources give no further detail.", "Le pedine in 28, 29 e 30 lasciano la casella solo con il punteggio esatto. Il movimento all'indietro del «tiro nullo» è consentito solo verso caselle libere.": "Pieces on 28, 29 and 30 leave the square only with the exact score. The backward move of the “null throw” is allowed only onto free squares.", "Vince chi porta fuori per primo tutte le pedine. In epoca antica, secondo l'articolo, entrambi dovevano arrivare in fondo e chi era uscito per primo assisteva l'altro: qui non è implementato.": "The winner is whoever bears off all their pieces first. In ancient times, according to the article, both players had to reach the end and whoever had left first helped the other: this is not implemented here.", "Fonti": "Sources", "Voce «Senet», Wikipedia, che riporta le regole del gruppo di ricerca sul gioco dei CEMEA (set CEMEA).": "“Senet” entry, Wikipedia, which reports the rules of the CEMEA research group on the game (CEMEA set).", "Regole di Timothy Kendall e R.C. Bell, nell'adattamento UniNerd (set Kendall e Bell).": "Rules by Timothy Kendall and R.C. Bell, in the UniNerd adaptation (Kendall and Bell set).", "La storia del Senet": "The story of Senet", "Rivedi la storia": "Review the story", "Torna al gioco": "Back to the game", "‹ Indietro": "‹ Back", "Avanti ›": "Next ›", "Chiudi": "Close", "Set di regole": "Rule set", "CEMEA": "CEMEA", "Kendall e Bell": "Kendall and Bell", "Indietro": "Back", "Riproduci": "Play", "Avanti": "Next"};
+const I18N_EN={"<span class=\"ver\">v1.1<\/span> · Il gioco delle «case»: dodici buche, quarantotto semi e nessuna fortuna. Un mancala dell'Africa occidentale e dei Caraibi.": "<span class=\"ver\">v1.1<\/span> · The game of the “houses”: twelve pits, forty-eight seeds and no luck. A mancala from West Africa and the Caribbean.", "Avvia la storia": "Start the story", "Regole illustrate": "Illustrated rules", "Tavoliere del wari": "Wari board", "Nuova partita": "New game", "Impostazioni": "Settings", "Avversario": "Opponent", "Computer": "Computer", "Due giocatori": "Two players", "Livello del computer": "Computer level", "Principiante": "Beginner", "Intermedio": "Intermediate", "Esperto": "Expert", "Comincia": "Starts", "Sud": "South", "Nord": "North", "A sorte": "Random", "Grand slam": "Grand slam", "Abapa: nessuna cattura": "Abapa: no capture", "Caraibi: si cattura": "Caribbean: captures", "Tavoliere": "Board", "Con granai": "With stores", "Senza granai": "Without stores", "Mostra il numero di semi in ogni casa": "Show the number of seeds in each house", "Mostra le lettere delle case (A-F, a-f)": "Show house letters (A-F, a-f)", "Anteprima della semina<small>Il primo tocco mostra dove cadranno i semi e che cosa si cattura; il secondo conferma la mossa.<\/small>": "Sowing preview<small>The first tap shows where the seeds will land and what is captured; the second confirms the move.<\/small>", "Audio": "Audio", "Effetti sonori": "Sound effects", "Colonna sonora<small>Musica d'ispirazione africana (mbira, balafon, djembe), generata dal browser. Vale anche per la storia.<\/small>": "Soundtrack<small>African-inspired music (mbira, balafon, djembe), generated by the browser. It also applies to the story.<\/small>", "Cronaca": "Log", "Regole, strategia, interpretazioni e fonti": "Rules, strategy, interpretations and sources", "Scopo": "Goal", "Catturare più semi dell'avversario. I semi sono 48: chi ne cattura 25 vince. Con 24 a 24 la partita è pari.": "Capture more seeds than the opponent. There are 48 seeds: whoever captures 25 wins. At 24 to 24 the game is drawn.", "Due file da sei case. Ogni giocatore controlla la fila vicina: Sud la fila in basso (A-F), Nord quella in alto (a-f).": "Two rows of six houses. Each player controls the nearer row: South the bottom row (A-F), North the top row (a-f).", "Ogni casa contiene all'inizio 4 semi. I granai (se presenti) servono solo a raccogliere i semi catturati.": "Each house starts with 4 seeds. The stores (if present) only collect captured seeds.", "Le lettere seguono il senso della semina: A e a sono le case «davanti», le ultime prima di passare nella fila avversaria.": "The letters follow the direction of sowing: A and a are the “front” houses, the last ones before crossing into the opponent's row.", "Semina": "Sowing", "Si sceglie una casa propria non vuota, si prendono tutti i semi e li si distribuisce uno per casa in senso antiorario.": "Choose one of your own non-empty houses, take all the seeds and drop them one per house, counterclockwise.", "La casa di partenza viene saltata: con 12 semi o più resta vuota (regola della dodicesima buca).": "The starting house is skipped: with 12 seeds or more it stays empty (twelfth-house rule).", "Cattura": "Capture", "Se l'ultimo seme cade in una casa avversaria e la porta a 2 o 3 semi, la si cattura.": "If the last seed lands in an opponent's house and brings it to 2 or 3 seeds, it is captured.", "Si catturano anche, a ritroso, le case avversarie precedenti che contengono 2 o 3 semi, finché la catena non si interrompe.": "The preceding opponent houses holding 2 or 3 seeds are also captured, going backwards, until the chain is broken.", "Dar da mangiare": "Feeding the opponent", "Se le case dell'avversario sono tutte vuote, si deve giocare una semina che ne metta almeno un seme. Se non è possibile, chi deve muovere cattura tutti i semi rimasti e la partita finisce.": "If all the opponent's houses are empty, you must play a sowing that puts at least one seed in them. If that is not possible, the player to move captures all the remaining seeds and the game ends.", "Grand slam: una mossa che catturerebbe tutti i semi dell'avversario è valida, ma nella variante abapa non cattura nulla. Nella variante dei Caraibi cattura tutto, e chi ha catturato deve poi dare semi all'avversario, se può.": "Grand slam: a move that would capture all of the opponent's seeds is legal, but in the abapa variant it captures nothing. In the Caribbean variant it captures everything, and the capturing player must then give seeds to the opponent, if possible.", "Fine della partita": "End of the game", "Un giocatore arriva a 25 semi, oppure è 24 a 24.": "A player reaches 25 seeds, or it is 24 to 24.", "Se una stessa posizione si ripete per la terza volta (stallo), ciascuno prende i semi della propria fila.": "If the same position occurs for the third time (stalemate), each player takes the seeds on their own row.", "Strategia": "Strategy", "<b>Mosse in mano<\/b>: le mosse che non danno semi all'avversario. Avere più mosse in mano dell'avversario permette di tenere i semi e di scegliere il momento dell'attacco. Spesso conviene più di una cattura piccola.": "<b>Moves in hand<\/b>: moves that give no seeds to the opponent. Having more moves in hand than the opponent lets you keep your seeds and choose when to attack. It is often worth more than a small capture.", "Aprire le case dal davanti al dietro; A è la prima mossa più sicura. Un seme mosso dal davanti non crea un raddoppio, che farebbe perdere due mosse in mano.": "Open the houses from front to back; A is the safest first move. A seed moved from the front does not create a doubling, which would cost two moves in hand.", "Evitare di aprire più di due case adiacenti presto: lasciano catture a catena. Aprire una casa sì e una no (A-C-E) dà però poca flessibilità.": "Avoid opening more than two adjacent houses early: they leave chain captures. Opening every other house (A-C-E), however, gives little flexibility.", "Costruire una casa grande (12-17 semi) per fare il giro del tavoliere e tornare nella fila avversaria. Si difende tenendo due semi in una casa, in modo che la casa grande ne faccia quattro.": "Build a big house (12-17 seeds) to lap the board and return to the opponent's row. Defend by keeping two seeds in a house, so that the big house makes it four.", "Se si è in svantaggio di mosse in mano, conviene complicare la posizione giocando una casa grande invece dei semi singoli.": "If you are behind on moves in hand, it is better to complicate the position by playing a big house instead of single seeds.", "Nel finale conta chi ha più mosse in mano e a chi tocca muovere: con pochi semi un errore costa l'intera partita.": "In the endgame what counts is who has more moves in hand and whose turn it is: with few seeds, a mistake costs the whole game.", "Interpretazioni adottate": "Adopted interpretations", "Le regole sono quelle dell'abapa, usate nelle competizioni internazionali. La variante dei Caraibi descritta nel testo di Chamberlin differisce nel grand slam; è selezionabile nelle impostazioni.": "The rules are those of abapa, used in international competitions. The Caribbean variant described in Chamberlin's text differs in the grand slam; it can be selected in the settings.", "Stallo: la partita termina alla terza ripetizione della stessa posizione con lo stesso giocatore di turno, o dopo 400 mosse. Ciascun giocatore prende i semi della propria fila. L'assegnazione automatica sostituisce l'accordo tra i giocatori previsto dal gioco da tavolo.": "Stalemate: the game ends at the third repetition of the same position with the same player to move, or after 400 moves. Each player takes the seeds on their own row. Automatic assignment replaces the agreement between players provided for in the board game.", "Se un giocatore resta senza semi per effetto di una cattura (variante dei Caraibi), il turno torna a chi ha catturato, che deve dare da mangiare.": "If a player is left without seeds as a result of a capture (Caribbean variant), the turn goes back to the player who captured, who must feed the opponent.", "Il computer usa una ricerca alfa-beta con valutazione basata su semi catturati, mosse in mano e case vulnerabili. Il livello Esperto è limitato da un tempo massimo per mossa, quindi non è un giocatore perfetto.": "The computer uses an alpha-beta search with an evaluation based on captured seeds, moves in hand and vulnerable houses. The Expert level is limited by a maximum time per move, so it is not a perfect player.", "Il tavoliere «senza granai» tiene i semi catturati su un tappetino davanti al giocatore, in sostituzione della mano.": "The “without stores” board keeps captured seeds on a mat in front of the player, in place of the hand.", "Fonti": "Sources", "Voce «Wari», Wikipedia in italiano (regole dell'abapa).": "“Wari” entry, Italian Wikipedia (abapa rules).", "Voce «Oware», Wikipedia in inglese (regole dell'abapa).": "“Oware” entry, English Wikipedia (abapa rules).", "Voci «Mancala», Wikipedia in italiano e in inglese (storia e famiglia dei mancala).": "“Mancala” entries, Italian and English Wikipedia (history and the mancala family).", "David Chamberlin, «How to play Warri» (regole dei Caraibi e strategia).": "David Chamberlin, “How to play Warri” (Caribbean rules and strategy).", "La storia del wari": "The story of wari", "Rivedi la storia": "Replay the story", "Torna al gioco": "Back to the game", "‹ Indietro": "‹ Back", "Avanti ›": "Next ›", "Chiudi": "Close", "Indietro": "Back", "Riproduci": "Replay", "Avanti": "Next"};
 const i18nUnits=[];
 (function(){
   const INL=/^(B|I|EM|STRONG|SMALL|SPAN|CODE|BR|A|SUB|SUP|U)$/i;
@@ -683,191 +694,171 @@ function i18nApply(){
 }
 function setLang(l){
   if(l!=='it'&&l!=='en')return; LANG=l; try{localStorage.setItem(LANGKEY,l);}catch(e){}
-  i18nApply(); langHooks.forEach(f=>{try{f();}catch(e){}});
+  i18nApply(); langHooks.forEach(f=>{try{f();}catch(e){console.error("hook",e)}});
 }
 document.querySelectorAll('#langSeg button').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
 i18nApply();
 
 const NS='http://www.w3.org/2000/svg';
-/* geometria: caselle da 1000 unità, tre file da dieci, vassoi dell'aldilà sotto il tavoliere */
-const S=1000,G=40,M=220;
-const X=c=>M+c*(S+G), Y=r=>M+r*(S+G);
-const cellOf=s=>s<=10?{c:s-1,r:0}:(s<=20?{c:20-s,r:1}:{c:s-21,r:2});
-const ctr=(c,r)=>({x:X(c)+S/2,y:Y(r)+S/2});
-const sqXY=s=>{const q=cellOf(s);return ctr(q.c,q.r);};
-const TRAY=[220,5560], TW=5020, TY=3700, TH=1260, SC=.62;
-const slot=(p,i)=>({x:TRAY[p]+330+i*700,y:TY+800});
+const PITCH=1500, HR=640, SR=112, PCOL=['#e0a83a','#6aa7d8'];
+const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
-const svg=$('#board'), pl=$('#pieces'), gl=$('#ghosts');
-const els={};
-let st, gen=0, busy=false, rolling=false, selected=null, note='', cpuOn=true;
-const isCpu=p=>cpuOn&&p===1;
-const SPECIAL=[15,26,27,28,29,30];
+/* posizioni dei semi dentro una casa: spirale, stabile per indice */
+const SEEDPOS=(()=>{const a=[];for(let i=0;i<48;i++){const r=i?Math.min(455,178*Math.sqrt(i)*.8+30*Math.min(i,1)):0,t=i*2.39996+((i*7)%5)*.06;a.push({x:Math.round(r*Math.cos(t)),y:Math.round(r*Math.sin(t))});}return a;})();
+const jit=(i,k)=>(((i*73+k*131)%17)-8)*4;
 
-/* tavoliere: faience azzurra, giunti scuri, glifi in avorio */
-const GL={
-  15:()=>'<ellipse cx="0" cy="-200" rx="135" ry="175"/><path d="M0 -25V390M-235 70H235"/>',
-  26:()=>'<path d="M0 -380V230M-170 -310H170M-110 -170H110"/><ellipse cx="0" cy="330" rx="105" ry="105"/>',
-  27:()=>[-1,0,1].map(k=>{const y=k*190;return '<path d="M-340 '+y+'L-226 '+(y-90)+'L-113 '+y+'L0 '+(y-90)+'L113 '+y+'L226 '+(y-90)+'L340 '+y+'"/>';}).join(''),
-  28:()=>'<path d="M-230 -300V300M0 -300V300M230 -300V300"/>',
-  29:()=>'<path d="M-380 -90Q0 -380 380 -90Q0 200 -380 -90Z"/><circle cx="0" cy="-90" r="95"/><path d="M-410 -300Q0 -470 410 -300"/><path d="M-70 160V250M70 160V250" />',
-  30:()=>'<circle cx="0" cy="-70" r="235"/><circle cx="0" cy="-70" r="62" class="fl"/><path d="M0 250V400"/>'
-};
-function boardLayers(){
-  const L={};
-  const w=10800,h=3520;
-  let f='<rect width="'+w+'" height="'+h+'" rx="170" fill="#17566e"/><rect x="40" y="40" width="'+(w-80)+'" height="'+(h-80)+'" rx="140" fill="none" stroke="#0a2c3a" stroke-width="26"/>'
-    +'<rect x="'+(M-50)+'" y="'+(M-50)+'" width="'+(10*S+9*G+100)+'" height="'+(3*S+2*G+100)+'" rx="30" fill="#0a2c3a"/>';
-  [0,1].forEach(p=>{
-    f+='<rect x="'+TRAY[p]+'" y="'+TY+'" width="'+TW+'" height="'+TH+'" rx="150" fill="#12475c" stroke="#0a2c3a" stroke-width="26"/>';
-    for(let i=0;i<7;i++){const q=slot(p,i);f+='<circle class="tslot" data-i="'+i+'" cx="'+q.x+'" cy="'+q.y+'" r="'+(400*SC+30)+'" fill="rgba(0,0,0,.2)"/>';}
-  });
-  const y0=ctr(0,0).y,y1=ctr(0,1).y,y2=ctr(0,2).y,ym1=(y0+y1)/2,ym2=(y1+y2)/2;
-  f+='<g fill="none" stroke="#d9eef0" stroke-width="34" stroke-linecap="round" opacity=".75">'
-    +'<path d="M10560 '+y0+'Q10705 '+y0+' 10705 '+ym1+'Q10705 '+y1+' 10560 '+y1+'" marker-end="url(#arrhm)"/>'
-    +'<path d="M240 '+y1+'Q95 '+y1+' 95 '+ym2+'Q95 '+y2+' 240 '+y2+'" marker-end="url(#arrhm)"/></g>';
-  L.frame=f;
-  let t='',gl='',n='';
-  for(let s=1;s<=30;s++){
-    const q=cellOf(s), x=X(q.c), y=Y(q.r), sp=SPECIAL.includes(s), a=(s*37)%7;
-    t+='<g><rect x="'+x+'" y="'+y+'" width="'+S+'" height="'+S+'" rx="70" fill="url(#'+(s%2?'gtq':'gtq2')+')" stroke="#0a2c3a" stroke-width="22"/>'
-      +'<rect x="'+(x+38)+'" y="'+(y+38)+'" width="'+(S-76)+'" height="'+(S-76)+'" rx="46" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="14"/>'
-      +'<circle cx="'+(x+200+a*90)+'" cy="'+(y+260+((a*53)%5)*100)+'" r="'+(150+a*20)+'" fill="rgba(255,255,255,.07)"/><circle cx="'+(x+760-a*50)+'" cy="'+(y+720-((a*31)%4)*90)+'" r="'+(120+a*14)+'" fill="rgba(5,50,70,.09)"/>'
-      +(sp?'<rect x="'+(x+70)+'" y="'+(y+70)+'" width="'+(S-140)+'" height="'+(S-140)+'" rx="40" fill="none" stroke="#f3ecd8" stroke-width="12" stroke-dasharray="60 34" opacity=".55"/>':'')+'</g>';
-    if(GL[s]){const c=ctr(q.c,q.r);gl+='<g transform="translate('+c.x+' '+(c.y+(s===29||s===28?20:0))+')"><g class="gs">'+GL[s]()+'</g><g class="gf">'+GL[s]()+'</g></g>';}
-    n+='<text class="num" x="'+(x+60)+'" y="'+(y+200)+'">'+s+'</text>';
-  }
-  L.tiles=t; L.glyphs=gl; L.nums=n;
-  L.lbls=lblsHTML();
-  return L;
-}
-function lblsHTML(){return '<text class="lbl" x="'+(TRAY[0]+130)+'" y="'+(TY+215)+'">'+_('Aldilà','Afterlife')+' · '+NAMES[0]+'</text><text class="lbl" x="'+(TRAY[1]+130)+'" y="'+(TY+215)+'">'+_('Aldilà','Afterlife')+' · '+NAMES[1]+'</text>';}
-const BL=boardLayers();
-$('#frame').innerHTML=BL.frame;$('#tiles').innerHTML=BL.tiles;$('#glyphs').innerHTML=BL.glyphs;$('#nums').innerHTML=BL.nums;$('#lbls').innerHTML=BL.lbls;
-
-const pieceInner=o=>o===0
-  ?'<circle class="shadow" cx="30" cy="60" r="400"/><circle class="disc" r="400"/><circle class="cone" r="250"/><circle class="tip" r="85"/>'
-  :'<circle class="shadow" cx="30" cy="60" r="400"/><circle class="disc" r="400"/><circle class="grv" r="285"/><circle class="grv2" r="140"/>';
-function mkPiece(pc){
-  const g=document.createElementNS(NS,'g');
-  g.setAttribute('class','piece p'+pc.owner); g.dataset.id=pc.id;
-  g.innerHTML='<circle class="halo" r="500"/>'+pieceInner(pc.owner);
-  pl.appendChild(g); els[pc.id]=g; return g;
-}
-
-/* ===== lancio: legnetti (3D) o dado (3D), con ripiego 2D ===== */
-const tally=n=>{let s='';for(let i=0;i<n;i++)s+='<rect x="'+(24-(n-1)*5+i*10-1.6)+'" y="12" width="3.2" height="24" rx="1.4" fill="#f6efd9"/>';return s;};
-function diceHTML(faces){
-  if(st&&st.rules==='uninerd'){
-    const f=faces[0];
-    return '<svg class="die" viewBox="0 0 48 48"><rect x="3" y="3" width="42" height="42" rx="9" fill="#2a93ad" stroke="#0a2c3a" stroke-width="2"/>'
-      +(f===6?'<path d="M15 15L33 33M33 15L15 33" stroke="#f6efd9" stroke-width="4" stroke-linecap="round"/>':tally(f))+'</svg>';
-  }
-  return faces.map(w=>'<svg class="stk" viewBox="0 0 26 70"><rect x="3" y="2" width="20" height="66" rx="7" fill="'+(w?'#f6efd9':'#14161a')+'" stroke="#0a2c3a" stroke-width="2"/></svg>').join('');
-}
-function setDice(faces,cls){const d=$('#dice');d.className='dice '+(cls||'');d.innerHTML=diceHTML(faces);}
-
-const D3=(function(){
-  if(typeof THREE==='undefined')return null;
-  let rd;
-  try{rd=new THREE.WebGLRenderer({canvas:$('#diceCanvas'),alpha:true,antialias:true});}catch(e){return null;}
-  const W=400,H=130, R=.4, L=2.5;
-  rd.setPixelRatio(Math.min(2,window.devicePixelRatio||1)); rd.setSize(W,H,false);
-  const scene=new THREE.Scene(), cam=new THREE.PerspectiveCamera(27,W/H,.1,60);
-  cam.position.set(0,6.3,4.4); cam.lookAt(0,.2,0);
-  scene.add(new THREE.HemisphereLight(0xffffff,0x4a7f8f,.85));
-  const sun=new THREE.DirectionalLight(0xffffff,.95); sun.position.set(3,7,4); scene.add(sun);
-  const UP=new THREE.Vector3(0,1,0), ZA=new THREE.Vector3(0,0,1), tmp=new THREE.Quaternion(), tmp2=new THREE.Quaternion();
-  /* ombra */
-  const sc=document.createElement('canvas'); sc.width=sc.height=64;
-  const sx=sc.getContext('2d'), gr=sx.createRadialGradient(32,32,2,32,32,30);
-  gr.addColorStop(0,'rgba(0,0,0,.5)'); gr.addColorStop(1,'rgba(0,0,0,0)'); sx.fillStyle=gr; sx.fillRect(0,0,64,64);
-  const shTex=new THREE.CanvasTexture(sc);
-  const mkShadow=(w,h)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:shTex,transparent:true,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.y=.01;scene.add(m);return m;};
-  /* legnetti: mezzo cilindro, parte piana bianca, parte convessa nera */
-  const shp=new THREE.Shape(); shp.moveTo(-R,0); shp.absarc(0,0,R,Math.PI,2*Math.PI,false); shp.lineTo(-R,0);
-  const sg=new THREE.ExtrudeGeometry(shp,{depth:L,bevelEnabled:false,curveSegments:22}); sg.translate(0,0,-L/2);
-  const mBlack=new THREE.MeshStandardMaterial({color:0x17181d,roughness:.45,metalness:.05}), mWhite=new THREE.MeshStandardMaterial({color:0xf6efd9,roughness:.5});
-  const sticks=[];
-  for(let i=0;i<4;i++){
-    const root=new THREE.Group(), body=new THREE.Group();
-    body.add(new THREE.Mesh(sg,mBlack));
-    const pn=new THREE.Mesh(new THREE.PlaneGeometry(2*R*.97,L*.995),mWhite); pn.rotation.x=-Math.PI/2; pn.position.y=.004; body.add(pn);
-    root.add(body); scene.add(root);
-    sticks.push({root,body,sh:mkShadow(1.6,3.4),axis:ZA,spin:0,qT:new THREE.Quaternion(),delay:0,up:true});
-  }
-  /* dado a sei facce: 1-5 segni, 6 = X */
-  function faceTex(v){
-    const c=document.createElement('canvas'); c.width=c.height=128; const g=c.getContext('2d');
-    g.fillStyle='#2a93ad'; g.fillRect(0,0,128,128); g.strokeStyle='rgba(255,255,255,.25)'; g.lineWidth=5; g.strokeRect(6,6,116,116);
-    g.strokeStyle='#f6efd9'; g.lineWidth=9; g.lineCap='round';
-    if(v===6){g.beginPath();g.moveTo(34,34);g.lineTo(94,94);g.moveTo(94,34);g.lineTo(34,94);g.stroke();}
-    else for(let i=0;i<v;i++){const x=64+(i-(v-1)/2)*17;g.beginPath();g.moveTo(x,30);g.lineTo(x,98);g.stroke();}
-    return new THREE.CanvasTexture(c);
-  }
-  const NRM=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]].map(a=>new THREE.Vector3(a[0],a[1],a[2]));
-  const dieMats=[1,2,3,4,5,6].map(v=>new THREE.MeshStandardMaterial({map:faceTex(v),roughness:.35,metalness:.05}));
-  const dieRoot=new THREE.Group(), dieBody=new THREE.Group(); const DS=1.5;
-  dieBody.add(new THREE.Mesh(new THREE.BoxGeometry(DS,DS,DS),dieMats));
-  dieBody.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(DS,DS,DS)),new THREE.LineBasicMaterial({color:0x0a2c3a})));
-  dieRoot.add(dieBody); scene.add(dieRoot);
-  const die={root:dieRoot,body:dieBody,sh:mkShadow(2.8,2.8),axis:new THREE.Vector3(),spin:0,qT:new THREE.Quaternion(),delay:0};
-  let mode='sticks';
-  const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function setup(faces){
-    const items=[];
-    if(mode==='sticks'){
-      sticks.forEach((d,i)=>{
-        const x=(i-1.5)*1.45, up=!!faces[i]; d.up=up;
-        d.root.visible=d.sh.visible=true; d.root.position.set(x,up?R:.02,0); d.sh.position.x=x; d.sh.scale.setScalar(1); d.sh.material.opacity=1;
-        d.qT.setFromAxisAngle(UP,(Math.random()-.5)*.5).multiply(tmp.setFromAxisAngle(ZA,up?0:Math.PI)); d.base=d.root.position.y; items.push(d);
-      });
-      die.root.visible=die.sh.visible=false;
-    } else {
-      sticks.forEach(d=>{d.root.visible=d.sh.visible=false;});
-      die.root.visible=die.sh.visible=true; die.root.position.set(0,DS/2,0); die.sh.position.x=0; die.base=DS/2; die.sh.scale.setScalar(1); die.sh.material.opacity=1;
-      die.qT.setFromAxisAngle(UP,Math.random()*Math.PI*2).multiply(tmp.setFromUnitVectors(NRM[faces[0]-1],UP)); items.push(die);
-    }
-    return items;
-  }
-  return {
-    mode(m){mode=m;},
-    rest(faces){const it=setup(faces); it.forEach(d=>d.body.quaternion.copy(d.qT)); rd.render(scene,cam);},
-    roll(faces,done){
-      const it=setup(faces);
-      if(still){it.forEach(d=>d.body.quaternion.copy(d.qT)); rd.render(scene,cam); setTimeout(done,200); return;}
-      it.forEach((d,i)=>{
-        d.axis=mode==='sticks'?ZA:new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).normalize();
-        d.spin=(mode==='sticks'?(2+Math.floor(Math.random()*3)+.0):(2.5+Math.random()*2))*Math.PI*2; d.delay=i*80;
-      });
-      const t0=performance.now(), T=1300;
-      (function frame(now){
-        let all=true;
-        it.forEach(d=>{
-          const t=Math.min(1,Math.max(0,(now-t0-d.delay)/T)); if(t<1)all=false;
-          const e=1-Math.pow(1-t,3);
-          d.body.quaternion.copy(tmp2.setFromAxisAngle(d.axis,d.spin*(1-e))).multiply(d.qT);
-          const hop=Math.abs(Math.sin(t*Math.PI*3))*Math.pow(1-t,1.3)*1.2;
-          d.root.position.y=d.base+hop; d.sh.scale.setScalar(1-hop*.2); d.sh.material.opacity=1-hop*.45;
-        });
-        rd.render(scene,cam);
-        if(all)done(); else requestAnimationFrame(frame);
-      })(performance.now());
-    }
+/* geometria: indici 0-5 Sud (F..A, da sinistra a destra), 6-11 Nord (f..a, da destra a sinistra) */
+function geo(gran){
+  const G={gran,x0:gran?2030:330,OY:gran?0:800};
+  G.W=gran?13060:9660; G.H=gran?5000:6600; G.yN=G.OY+1450; G.yS=G.OY+3550;
+  G.cx=h=>G.x0+750+PITCH*(h<6?h:11-h); G.cy=h=>h<6?G.yS:G.yN;
+  G.gx=p=>p===0?G.W-630-550:630+550; G.gy=G.OY+2500;
+  G.mat=p=>p===0?{x:330,y:G.OY+5000+90,w:9000,h:620}:{x:330,y:90,w:9000,h:620};
+  G.heap=(p,i)=>{
+    if(gran){const row=Math.floor(i/6),col=i%6;return{x:G.gx(p)+(col-2.5)*172+(row%2?86:0)-43+jit(i,1),y:G.gy+1400-row*150+jit(i,2)};}
+    const m=G.mat(p),row=Math.floor(i/24),col=i%24;return{x:m.x+1700+col*150+(row%2?70:0)+jit(i,1),y:m.y+m.h/2+(row?80:-80)+jit(i,2)};
   };
-})();
-if(D3)$('#dice').hidden=true; else $('#diceCanvas').hidden=true, $('#dice').hidden=false;
-function showDice(faces,idle){if(D3)D3.rest(faces);else setDice(faces,idle?'idle':'');}
-function rollVisual(th,done){
-  if(D3){D3.roll(th.faces,done);return;}
-  const g=gen; let k=0;
-  const iv=setInterval(()=>{
-    if(g!==gen){clearInterval(iv);return;}
-    const r=rollThrow(st,Math.random); setDice(r.faces,'rolling');
-    if(++k>=7){clearInterval(iv);setDice(th.faces,'');done();}
-  },90);
+  G.hand=p=>gran?{x:G.gx(p),y:G.gy+300}:{x:G.mat(p).x+900,y:G.mat(p).y+G.mat(p).h/2};
+  return G;
 }
-const restFaces=()=>st.rules==='kendall'?[true,false,true,false]:[1];
+
+/* ===== tavoliere (usato dal gioco e dalle regole illustrate) ===== */
+function Board(svg,gran){
+  const G=geo(gran); svg.setAttribute('viewBox','0 0 '+G.W+' '+G.H);
+  const fy=G.OY, fh=5000; let h='';
+  h+='<rect x="0" y="'+fy+'" width="'+G.W+'" height="'+fh+'" rx="300" fill="url(#gwood)"/>';
+  for(let k=0;k<17;k++){const y=fy+(k+1)*fh/18,a=70*Math.sin(k*1.7);h+='<path d="M60 '+y+'C'+(G.W*.28)+' '+(y+a)+' '+(G.W*.62)+' '+(y-a)+' '+(G.W-60)+' '+(y+a*.4)+'" fill="none" stroke="#000" stroke-opacity="'+(.05+(k%3)*.025)+'" stroke-width="'+(10+(k%4)*5)+'"/>';}
+  h+='<rect x="70" y="'+(fy+70)+'" width="'+(G.W-140)+'" height="'+(fh-140)+'" rx="250" fill="none" stroke="#2a150a" stroke-opacity=".65" stroke-width="40"/>';
+  h+='<rect x="330" y="'+(fy+120)+'" width="'+(G.W-660)+'" height="90" fill="url(#ptri)"/><rect x="330" y="'+(fy+fh-210)+'" width="'+(G.W-660)+'" height="90" fill="url(#ptri)" transform="rotate(180 '+(G.W/2)+' '+(fy+fh-165)+')"/>';
+  const ym=(G.yN+G.yS)/2;
+  h+='<path d="M'+G.x0+' '+ym+'H'+(G.x0+9000)+'" stroke="#1d0e05" stroke-opacity=".55" stroke-width="30"/>';
+  for(let i=0;i<6;i++){const x=G.x0+750+i*PITCH;h+='<path d="M'+(x-90)+' '+ym+'L'+x+' '+(ym-70)+'L'+(x+90)+' '+ym+'L'+x+' '+(ym+70)+'Z" fill="#e0a83a" opacity=".8"/>';}
+  if(gran){
+    [0,1].forEach(p=>{const x=G.gx(p)-550;h+='<rect x="'+(x-30)+'" y="'+(G.gy-1580)+'" width="1160" height="3160" rx="590" fill="rgba(0,0,0,.3)"/><rect x="'+x+'" y="'+(G.gy-1550)+'" width="1100" height="3100" rx="550" fill="url(#ggr)"/>';});
+  } else {
+    [0,1].forEach(p=>{const m=G.mat(p);h+='<rect x="'+m.x+'" y="'+m.y+'" width="'+m.w+'" height="'+m.h+'" rx="120" fill="url(#pmat)" stroke="#6a4a26" stroke-width="30" stroke-dasharray="90 50"/>'
+      +'<text class="matl" data-mi="1" x="'+(m.x+150)+'" y="'+(m.y+m.h/2-20)+'">'+_('In mano','In hand')+'</text><text class="matl" data-nm="'+p+'" x="'+(m.x+150)+'" y="'+(m.y+m.h/2+170)+'" style="font-size:140px">'+NAMES[p]+'</text>';});
+  }
+  for(let i=0;i<12;i++){const x=G.cx(i),y=G.cy(i);
+    h+='<circle cx="'+(x+8)+'" cy="'+(y+14)+'" r="'+(HR+46)+'" fill="rgba(0,0,0,.3)"/><circle cx="'+x+'" cy="'+y+'" r="'+HR+'" fill="url(#gpit)" stroke="#1a0c04" stroke-width="30"/>'
+      +'<path d="M'+(x+HR*.55)+' '+(y+HR*.83)+'A'+HR+' '+HR+' 0 0 0 '+(x-HR*.3)+' '+(y+HR*.95)+'" fill="none" stroke="#ffd9a0" stroke-opacity=".22" stroke-width="26" stroke-linecap="round" transform="translate(0 -40)"/>';}
+  h+='<rect class="rowhl" id="rh0" x="'+(G.x0-30)+'" y="'+(G.yS-HR-70)+'" width="9060" height="'+(2*HR+140)+'" rx="'+(HR+70)+'"/><rect class="rowhl" id="rh1" x="'+(G.x0-30)+'" y="'+(G.yN-HR-70)+'" width="9060" height="'+(2*HR+140)+'" rx="'+(HR+70)+'"/>';
+  h+='<g class="ann"></g>';
+  for(let i=0;i<12;i++)h+='<g class="sg" data-h="'+i+'" transform="translate('+G.cx(i)+' '+G.cy(i)+')"></g>';
+  for(let p=0;p<2;p++)h+='<g class="gg" data-p="'+p+'"></g>';
+  for(let i=0;i<12;i++){const x=G.cx(i),sud=i<6;
+    h+='<text class="hlt" x="'+x+'" y="'+(sud?G.OY+4660:G.OY+470)+'">'+LETT[i]+'</text><text class="hcnt" data-c="'+i+'" x="'+x+'" y="'+(sud?G.OY+4480:G.OY+730)+'">4</text>';}
+  for(let p=0;p<2;p++){
+    if(gran)h+='<text class="gcnt" data-gc="'+p+'" x="'+G.gx(p)+'" y="'+(G.gy-1000)+'">0</text><text class="gname" data-nm="'+p+'" x="'+G.gx(p)+'" y="'+(G.gy-1400)+'">'+NAMES[p]+'</text>';
+    else{const m=G.mat(p);h+='<text class="gcnt" data-gc="'+p+'" x="'+(m.x+1380)+'" y="'+(m.y+m.h/2+130)+'">0</text>';}
+  }
+  h+='<g class="prv"></g>';
+  h+='<g class="hand" style="transform:translate(0px,0px)"><circle class="hc" r="230"/><text class="ht">0</text></g>';
+  for(let i=0;i<12;i++)h+='<circle class="ov" data-h="'+i+'" cx="'+G.cx(i)+'" cy="'+G.cy(i)+'" r="'+(HR+34)+'"/>';
+  svg.innerHTML=h;
+  const sg=[...svg.querySelectorAll('.sg')], gg=[...svg.querySelectorAll('.gg')], cnt=[...svg.querySelectorAll('.hcnt')], gcn=[...svg.querySelectorAll('.gcnt')];
+  const ov=[...svg.querySelectorAll('.ov')], hand=svg.querySelector('.hand'), prv=svg.querySelector('.prv'), ann=svg.querySelector('.ann');
+  const rh=[svg.querySelector('#rh0'),svg.querySelector('#rh1')];
+  const dr=new Array(12).fill(0), gd=[0,0];
+  const seedEl=(i,r,pop,pos)=>{const c=document.createElementNS(NS,'circle');c.setAttribute('class','seed'+(pop?' new':''));c.setAttribute('cx',pos.x);c.setAttribute('cy',pos.y);c.setAttribute('r',r);c.setAttribute('fill','url(#gsd'+(i%3)+')');if(pop)setTimeout(()=>c.classList.remove('new'),450);return c;};
+  const B={G,svg,ov,
+    setHouse(i,n,pop){
+      const g=sg[i];
+      while(dr[i]<n){g.appendChild(seedEl(dr[i],SR,pop,SEEDPOS[Math.min(47,dr[i])]));dr[i]++;}
+      while(dr[i]>n){g.removeChild(g.lastChild);dr[i]--;}
+      cnt[i].textContent=n;
+    },
+    setGran(p,n,pop){
+      const g=gg[p];
+      while(gd[p]<n){g.appendChild(seedEl(gd[p],gran?88:84,pop,G.heap(p,gd[p])));gd[p]++;}
+      while(gd[p]>n){g.removeChild(g.lastChild);gd[p]--;}
+      gcn[p].textContent=n;
+    },
+    sync(b,g){for(let i=0;i<12;i++)B.setHouse(i,b[i]);B.setGran(0,g[0]);B.setGran(1,g[1]);},
+    get(i){return dr[i];}, getG(p){return gd[p];},
+    pos(i){return{x:G.cx(i),y:G.cy(i)};},
+    gpos(p){return G.hand(p);},
+    showHand(x,y,n,p,tr){hand.style.transition=tr?'':'none';hand.style.transform='translate('+x+'px,'+y+'px)';hand.querySelector('.ht').textContent=n;hand.setAttribute('class','hand on p'+p);if(!tr){hand.getBoundingClientRect();hand.style.transition='';}},
+    moveHand(x,y,ms,sc){hand.style.transition='transform '+ms+'ms ease-out';hand.style.transform='translate('+x+'px,'+y+'px) scale('+(sc||1)+')';},
+    handN(n){hand.querySelector('.ht').textContent=n;},
+    hideHand(){hand.setAttribute('class','hand');},
+    cls(i,c,on){ov[i].classList.toggle(c,!!on);},
+    clearCls(){ov.forEach(o=>{['mv','sel','pth','lst','cpt','vd','hi'].forEach(c=>o.classList.remove(c));});},
+    row(p){rh[0].style.fill=p===0?'rgba(224,168,58,.2)':'transparent';rh[1].style.fill=p===1?'rgba(106,167,216,.22)':'transparent';},
+    preview(m,p){
+      prv.innerHTML=''; if(!m)return;
+      const add={};m.path.forEach(x=>add[x]=(add[x]||0)+1);
+      let s='';
+      Object.keys(add).forEach(k=>{const x=G.cx(+k)+HR*.62,y=G.cy(+k)-HR*.62;s+='<circle class="pvb" cx="'+x+'" cy="'+y+'" r="170"/><text class="pvt" x="'+x+'" y="'+(y+65)+'">+'+add[k]+'</text>';});
+      prv.innerHTML=s;
+    },
+    ann(html){ann.innerHTML=html;},
+    relabel(){svg.querySelectorAll('[data-nm]').forEach(t=>{t.textContent=NAMES[+t.dataset.nm];});svg.querySelectorAll('[data-mi]').forEach(t=>{t.textContent=_('In mano','In hand');});},
+    opts(cnt,lett){svg.classList.toggle('hide-cnt',!cnt);svg.classList.toggle('hide-lett',!lett);}
+  };
+  return B;
+}
+const LETT_=LETT;
+
+/* ===== animazione di una mossa su un tavoliere (gioco e tutorial) ===== */
+async function playFx(B,fx,S,ok,shown,mute){
+  const G=B.G, cur=fx.before.slice(), snd=n=>{if(!mute)AU[n].apply(AU,[].slice.call(arguments,1));};
+  const sfx=(n,a)=>{if(!mute)AU[n](a);};
+  B.sync(cur,shown);
+  const p=fx.p, o=B.pos(fx.from);
+  /* si prendono i semi */
+  cur[fx.from]=0; B.setHouse(fx.from,0); B.showHand(o.x,o.y,fx.n,p,false); sfx('pick'); await wait(calm?60:300); if(!ok())return shown;
+  let left=fx.n, prev=o;
+  for(let k=0;k<fx.path.length;k++){
+    const t=fx.path[k], q=B.pos(t), d=Math.hypot(q.x-prev.x,q.y-prev.y), ms=calm?30:Math.round(Math.max(105,Math.min(175,70+d/17)));
+    if(!calm){B.moveHand(q.x,q.y,ms,1.12);await wait(ms+6);if(!ok())return shown;}
+    else B.showHand(q.x,q.y,left,p,false);
+    cur[t]++;left--;B.setHouse(t,cur[t],true);B.handN(left);sfx('step',k);
+    if(!calm){B.moveHand(q.x,q.y,50,1);}
+    await wait(calm?40:66); if(!ok())return shown;
+    prev=q;
+  }
+  B.hideHand(); await wait(calm?20:140); if(!ok())return shown;
+  /* catture */
+  if(fx.caps&&fx.caps.length){
+    fx.caps.forEach(c=>B.cls(c.h,'cpt',true)); sfx('mark'); await wait(calm?200:620); if(!ok())return shown;
+    const gp=B.gpos(p);
+    for(const c of fx.caps){
+      const q=B.pos(c.h); cur[c.h]=0; B.setHouse(c.h,0); B.cls(c.h,'cpt',false);
+      B.showHand(q.x,q.y,c.n,p,false);
+      if(!calm){B.moveHand(gp.x,gp.y,380,1);await wait(400);if(!ok())return shown;}
+      B.hideHand(); shown=shown.slice(); shown[p]+=c.n; B.setGran(p,shown[p],true); sfx('capture',c.n); await wait(calm?40:120); if(!ok())return shown;
+    }
+  } else if(fx.voided&&fx.voided.length){
+    fx.voided.forEach(c=>B.cls(c.h,'vd',true)); sfx('nocap'); await wait(calm?300:1100); if(!ok())return shown;
+    fx.voided.forEach(c=>B.cls(c.h,'vd',false));
+  }
+  /* fine partita per carestia o stallo: i semi rimasti vanno ai granai */
+  if(S&&S.sweep){
+    for(let pp=0;pp<2;pp++){
+      if(!S.sweep[pp])continue; const gp=B.gpos(pp); sfx('sweep');
+      for(let i=pp*6;i<pp*6+6&&false;i++);
+      for(let i=0;i<12;i++){
+        if(!cur[i])continue; if(!((S.over==='nofeed')?(i<6?0:1)===pp:(i<6?0:1)===pp))continue;
+        const q=B.pos(i),n=cur[i]; cur[i]=0; B.setHouse(i,0); B.showHand(q.x,q.y,n,pp,false);
+        if(!calm){B.moveHand(gp.x,gp.y,300,1);await wait(310);if(!ok())return shown;}
+        B.hideHand(); shown=shown.slice(); shown[pp]+=n; B.setGran(pp,shown[pp],true); await wait(calm?20:60); if(!ok())return shown;
+      }
+    }
+  }
+  return shown;
+}
+
+/* ===== gioco ===== */
+const svg=$('#board');
+let cfg={gran:true,cnt:true,lett:true,prev:true};
+let bd=Board(svg,cfg.gran);
+let st, gen=0, busy=false, selected=null, note='', cpuOn=true, level=2, shown=[0,0], hintH=null;
+const isCpu=p=>cpuOn&&p===1;
+const alive=g=>()=>g===gen;
+function later(fn,ms){const g=gen;setTimeout(()=>{if(g===gen)fn();},ms);}
+function applyView(){bd.opts(cfg.cnt,cfg.lett);}
 
 function pushLog(ev){
   const ol=$('#log');
@@ -879,274 +870,144 @@ function pushLog(ev){
   });
   while(ol.children.length>80)ol.removeChild(ol.lastChild);
 }
-
-/* ===== stato -> DOM, con animazione dei passi ===== */
-const SLOTS={}, animating=new Set();
-function layoutMap(){
-  const used=[new Set(),new Set()], m={};
-  st.pieces.forEach(pc=>{
-    if(pc.pos===OUT&&SLOTS[pc.id]!==undefined)used[pc.owner].add(SLOTS[pc.id]); else if(pc.pos!==OUT)delete SLOTS[pc.id];
-  });
-  st.pieces.forEach(pc=>{
-    if(pc.pos!==OUT||SLOTS[pc.id]!==undefined)return;
-    let i=0; while(used[pc.owner].has(i))i++; used[pc.owner].add(i); SLOTS[pc.id]=i;
-  });
-  st.pieces.forEach(pc=>{
-    if(pc.pos===OUT){const q=slot(pc.owner,SLOTS[pc.id]);m[pc.id]={x:q.x,y:q.y,s:SC};}
-    else{const q=sqXY(pc.pos);m[pc.id]={x:q.x,y:q.y,s:1};}
-  });
-  return m;
-}
-function freeIdx(p){
-  const u=new Set(); st.pieces.forEach(pc=>{if(pc.owner===p&&pc.pos===OUT&&SLOTS[pc.id]!==undefined)u.add(SLOTS[pc.id]);});
-  let i=0; while(u.has(i))i++; return i;
-}
-const setT=(el,q,k)=>{el.style.transform='translate('+q.x+'px,'+q.y+'px) scale('+(q.s*(k||1))+')';};
-const wait=ms=>new Promise(r=>setTimeout(r,ms));
-const snapshot=()=>st.pieces.map(p=>p.pos);
-const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
-function curXY(el){const m=/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/.exec(el.style.transform||'');return m?{x:+m[1],y:+m[2]}:{x:0,y:0};}
-function wpts(pc,from,to,fx,v){
-  const a=[];
-  if(to===OUT){for(let s=from+1;s<=30;s++)a.push(s);a.push('X');return a;}
-  if(fx&&fx.via&&fx.mover===pc.id){for(let s=from+1;s<=fx.via;s++)a.push(s);a.push('F');return a;}
-  if(to>from){ if(from===26&&to===28&&v===1&&fx&&fx.mover===pc.id)return [28]; for(let s=from+1;s<=to;s++)a.push(s); return a; }
-  for(let s=from-1;s>=to;s--)a.push(s);
-  return a;
-}
-async function animateChanges(snap){
-  const g=gen, LM=layoutMap(), fx=st.fx||{}, v=st.roll?st.roll.v:0;
-  const ch=st.pieces.filter(pc=>snap[pc.id]!==pc.pos);
-  if(!ch.length)return;
-  ch.sort((a,b)=>(b.id===fx.mover?1:0)-(a.id===fx.mover?1:0));
-  ch.forEach(pc=>animating.add(pc.id));
-  for(const pc of ch){
-    const el=els[pc.id]; pl.appendChild(el);
-    const isM=pc.id===fx.mover, from=snap[pc.id];
-    if(calm){setT(el,LM[pc.id]);}
-    else{
-      const pts=wpts(pc,from,pc.pos,fx,v); let prev=curXY(el);
-      for(let k=0;k<pts.length;k++){
-        const w=pts[k]; let q;
-        if(w==='X'||w==='F'){q=LM[pc.id];}
-        else{const z=sqXY(w);q={x:z.x,y:z.y,s:1};}
-        if(w==='X'||w==='F'){ el.style.transition=''; setT(el,q); await wait(540); if(g!==gen)return; break; }
-        const dist=Math.hypot(q.x-prev.x,q.y-prev.y), d1=Math.round(Math.max(80,Math.min(190,50+dist/9))), d2=60;
-        el.style.transition='transform '+d1+'ms ease-out'; setT(el,q,isM?1.25:1.08);
-        await wait(d1+4); if(g!==gen)return;
-        el.style.transition='transform '+d2+'ms ease-in'; setT(el,q,1); if(isM)AU.step(k);
-        await wait(d2+6); if(g!==gen)return;
-        prev=q;
-      }
-      el.style.transition=''; setT(el,LM[pc.id]);
-    }
-    if(isM){
-      if(pc.pos===OUT)AU.exit();
-      else if(fx.via===27)AU.bad();
-      else if(ch.length>1)AU.swap();
-      else if(from>pc.pos)AU.back();
-      else if(SAFE.includes(pc.pos))AU.safe();
-      else AU.land();
-    }
-  }
-  ch.forEach(pc=>animating.delete(pc.id));
-  render();
+const moveOf=h=>st.moves.find(m=>m.h===h);
+const plural=(n,a,b)=>n+' '+(n===1?a:b);
+const seeds=n=>plural(n,_('seme','seed'),_('semi','seeds'));
+function describe(m){
+  let t=_('Casa ','House ')+LETT[m.h]+': '+seeds(m.n)+_(', ultimo in ',', last in ')+LETT[m.last]+'.';
+  if(m.gain)t+=_(' Cattura ',' Captures ')+seeds(m.gain)+'.';
+  else if(m.grand)t+=_(' Grand slam: nessuna cattura.',' Grand slam: no capture.');
+  return t;
 }
 
+let animFlag=false;
 function render(){
-  const LM=layoutMap();
-  st.pieces.forEach(pc=>{
-    const el=els[pc.id]||mkPiece(pc);
-    if(!animating.has(pc.id))setT(el,LM[pc.id]);
-  });
+  if(!animFlag){bd.sync(st.b,shown);}
   const human=st.phase==='move'&&!busy&&!isCpu(st.turn);
-  const mv=st.phase==='move'?st.moves:[];
-  st.pieces.forEach(pc=>{
-    const el=els[pc.id];
-    const idx=mv.length?moveFor(pc):-1;
-    const can=human&&idx>=0;
-    el.classList.toggle('movable',can);
-    el.classList.toggle('onb',pc.pos>=1&&pc.pos<=30);
-    el.classList.toggle('selected',idx>=0&&selected===idx&&st.phase==='move');
-    el.classList.toggle('stuck',stuckPiece(st,pc.owner)===pc);
-    if(can){el.setAttribute('tabindex','0');el.setAttribute('role','button');el.setAttribute('aria-label',moveLabel(mv[idx]));}
-    else{el.removeAttribute('tabindex');el.removeAttribute('role');el.removeAttribute('aria-label');}
+  bd.clearCls();
+  if(st.phase==='move'&&!animFlag){
+    st.moves.forEach(m=>{if(human)bd.cls(m.h,'mv',true);});
+    if(selected!=null){
+      const m=moveOf(selected);
+      if(m){bd.cls(selected,'sel',true);
+        if(human&&cfg.prev){m.path.forEach(x=>bd.cls(x,'pth',true));bd.cls(m.last,'lst',true);(m.caps||[]).forEach(c=>bd.cls(c.h,'cpt',true));bd.preview(m,st.turn);}
+        else bd.preview(null);
+      }
+    } else bd.preview(null);
+  } else if(!animFlag) bd.preview(null);
+  bd.ov.forEach((o,i)=>{
+    const can=human&&!!moveOf(i);
+    o.setAttribute('aria-hidden',can?'false':'true');
+    if(can){o.setAttribute('tabindex','0');o.setAttribute('role','button');o.setAttribute('aria-label',_('Casa ','House ')+LETT[i]+', '+seeds(st.b[i])+(selected===i?_(', selezionata: conferma',', selected: confirm'):''));}
+    else{o.removeAttribute('tabindex');o.removeAttribute('role');o.removeAttribute('aria-label');}
   });
-  gl.innerHTML='';
-  if(st.phase==='move'&&!busy){
-    const p=st.turn;
-    mv.forEach((m,i)=>{
-      if(isCpu(p)&&selected!==i)return;
-      let x,y,r=400;
-      if(m.kind==='exit'){const q=slot(p,freeIdx(p));x=q.x;y=q.y;r=400*SC;}
-      else{const c=sqXY(m.to);x=c.x;y=c.y;}
-      const c=document.createElementNS(NS,'circle');
-      c.setAttribute('class','ghost p'+p+(selected===i?' sel':'')+(m.cap!=null?' cap':'')+(m.kind==='exit'?' off':'')+(m.kind==='back'?' back':''));
-      c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',r);c.dataset.idx=i;
-      gl.appendChild(c);
-    });
-  }
+  bd.row(st.phase==='move'?st.turn:null);
   panels();
 }
-function moveFor(pc){
-  if(st.phase!=='move'||pc.owner!==st.turn)return -1;
-  const ok=st.moves.findIndex(m=>m.id===pc.id&&m.kind!=='jump'); return ok>=0?ok:st.moves.findIndex(m=>m.id===pc.id);
-}
-function moveLabel(m){
-  if(m.kind==='exit')return _('Porta fuori la pedina in casella ','Bear off the piece on square ')+m.from;
-  if(m.kind==='back')return _('Pedina in casella ','Piece on square ')+m.from+_(', retrocedi alla ',', move back to ')+m.to;
-  if(m.kind==='jump')return _('Pedina in casella ','Piece on square ')+m.from+_(', salta la malasorte e vai alla ',', skip the House of Misfortune and go to ')+m.to;
-  return _('Pedina in casella ','Piece on square ')+m.from+_(', muovi alla ',', move to ')+m.to+(m.cap!=null?_(' e attacca',' and attack'):'');
-}
-
 function panels(){
   for(let p=0;p<2;p++){
-    const out=st.pieces.filter(x=>x.owner===p&&x.pos===OUT).length, inp=st.n-out;
-    let m='';for(let i=0;i<st.n;i++)m+='<i class="'+(i<out?'on':'')+'"></i>';
-    const el=$('#pc'+p), sp=stuckPiece(st,p);
-    el.className='pcard'+(st.turn===p&&st.phase!=='over'?' active':'');
+    const el=$('#pc'+p), sc=animFlag?shown[p]:st.sc[p], inrow=animFlag?'…':st.b.slice(p*6,p*6+6).reduce((a,b)=>a+b,0);
+    el.className='pcard'+(st.turn===p&&st.phase==='move'?' active':'')+(st.phase==='over'&&st.winner===p?' win':'');
     el.innerHTML='<span class="sw p'+p+'"></span><div class="pname">'+NAMES[p]+'<span class="tag">'+(p===1&&cpuOn?_('computer','computer'):_('giocatore','player'))+'</span></div>'
-      +'<div class="meter" aria-hidden="true">'+m+'</div>'
-      +'<div class="meta">'+_('Nell\'aldilà ','In the afterlife ')+out+'/'+st.n+_(' · in gioco ',' · in play ')+inp+(sp?_(' · bloccato in 27',' · blocked on 27'):'')+'</div>';
+      +'<div class="pbar" aria-hidden="true"><i style="width:'+Math.min(100,sc/25*100)+'%"></i><u></u></div>'
+      +'<div class="meta">'+_('Catturati '+sc+' su 25 · sulla fila '+inrow,'Captured '+sc+' of 25 · on the row '+inrow)+'</div>';
   }
   const over=st.phase==='over';
   $('#againBtn').hidden=!over;
-  const human=!isCpu(st.turn)&&!busy&&!rolling;
-  const canRoll=st.phase==='roll'&&human;
-  const rb=$('#rollBtn'); rb.hidden=over; rb.disabled=!canRoll;
-  const dev=st.rules==='kendall'?_('i legnetti','the casting sticks'):_('il dado','the die');
-  rb.textContent=st.again?_('Tira ancora','Throw again'):_('Tira ','Throw ')+dev;
-  const fe=!over&&canRoll&&freeExit(st)!=null; $('#exitBtn').hidden=!fe;
+  const human=st.phase==='move'&&!busy&&!isCpu(st.turn);
+  const hb=$('#hintBtn'); hb.hidden=over; hb.disabled=!human;
   $('#status').innerHTML=statusHTML();
 }
 function statusHTML(){
-  const p=st.turn, N='<b>'+NAMES[p]+'</b>', dev=st.rules==='kendall'?_('i legnetti','the casting sticks'):_('il dado','the die');
-  if(st.phase==='over')return '<b>'+NAMES[st.winner]+_(' vince.</b> Ha portato nell\'aldilà tutte le ',' wins.</b> All ')+st.n+_(' pedine.',' pieces have been borne off to the afterlife.');
-  if(rolling)return _('Lancio…','Throwing…');
-  if(note)return typeof note==='function'?note():note;
-  if(st.phase==='move'){
-    const d=describeRoll(st,st.roll.v);
-    if(isCpu(p))return N+_(' (computer) sceglie la mossa. ',' (computer) is choosing a move. ')+d.head+'.';
-    if(selected!=null){const m=st.moves[selected];return d.head+'. '+moveLabel(m)+_('. Tocca di nuovo la pedina o la casella tratteggiata per confermare.','. Tap the piece or the dashed square again to confirm.');}
-    const back=st.moves.every(m=>m.kind==='back');
-    return d.head+'. '+(back?_('Nessuna pedina può avanzare: ne retrocede una. ','No piece can advance: one moves back. '):d.text+' ')+_('Tocca una pedina evidenziata.','Tap a highlighted piece.')+(st.moves.some(m=>m.kind==='jump')?_(' Dalla 26 puoi toccare la casella 28 per saltare la malasorte.',' From 26 you can tap square 28 to skip the House of Misfortune.'):'');
+  const p=st.turn, N='<b>'+NAMES[p]+'</b>';
+  if(st.phase==='over'){
+    const a=st.sc[0],b=st.sc[1];
+    if(st.winner==='draw')return '<b>'+_('Pareggio '+a+' a '+b+'.','Draw, '+a+' to '+b+'.')+'</b>';
+    const w=st.winner; return '<b>'+NAMES[w]+_(' vince ',' wins ')+st.sc[w]+_(' a ',' to ')+st.sc[1-w]+'.</b> '+({score:_('Ha raggiunto 25 semi.','Reached 25 seeds.'),nofeed:_('La partita termina perché non si possono dare semi all\'avversario.','The game ends because no seeds can be given to the opponent.'),cycle:_('La posizione si è ripetuta e ciascuno ha preso i semi della propria fila.','The position repeated and each player took the seeds on their own row.')}[st.over]||'');
   }
-  if(isCpu(p))return N+_(' (computer) lancia…',' (computer) is throwing…');
-  if(stuckPiece(st,p))return N+_(' è bloccato in casa 27: serve un 4. Lancia.',' is blocked on square 27: a 4 is needed. Throw.');
-  return (st.again?N+_(' ha diritto a un altro lancio.',' is entitled to another throw.'):_('Tocca a ','It is ')+N+_('.',"'s turn."))+_(' Lancia ',' Throw ')+dev+'.'+(freeExit(st)!=null?_(' Puoi anche portare fuori la pedina in 30.',' You can also bear off the piece on 30.'):'');
+  if(note)return note;
+  if(animFlag)return '';
+  if(isCpu(p))return N+_(' (computer) sceglie la mossa…',' (computer) is choosing a move…');
+  let t=_('Tocca a ','Turn: ')+N+'. ';
+  if(st.feedOnly)t+='<b>'+NAMES[1-p]+_(' non ha semi:',' has no seeds:')+'</b> '+_('devi giocare una casa che gliene dia. ','you must play a house that gives them some. ');
+  if(selected!=null){const m=moveOf(selected);if(m)return t+describe(m)+(cfg.prev?_(' Tocca di nuovo la casa per confermare.',' Tap the house again to confirm.'):'');}
+  return t+_('Scegli una delle tue case','Choose one of your houses')+(cfg.prev?_(': il primo tocco mostra l\'anteprima.',': the first tap shows a preview.'):'.');
 }
 
 /* flusso */
-function later(fn,ms){const g=gen;setTimeout(()=>{if(g===gen)fn();},ms);}
 function next(){
-  note=''; render();
+  note=''; selected=null; render();
   if(st.phase==='over')return;
-  if(isCpu(st.turn))later(cpuTurn,900);
-}
-function cpuTurn(){
-  if(freeExit(st)!=null)doFreeExit(); else doRoll();
-}
-async function doFreeExit(){
-  if(busy||rolling||freeExit(st)==null)return;
-  AU.click(); busy=true; const g=gen, snap=snapshot();
-  const ev=applyFreeExit(st); pushLog(ev);
-  const pr=animateChanges(snap); render();
-  await pr; if(g!==gen)return;
-  if(st.phase==='over'){AU.win(); busy=false; render(); return;}
-  await wait(300); if(g!==gen)return;
-  busy=false; render();
-  if(isCpu(st.turn))later(doRoll,700);
-}
-function doRoll(){
-  if(busy||rolling||st.phase!=='roll')return;
-  selected=null; rolling=true; note=''; render(); $('#big').textContent='…';
-  AU.dice();
-  const th=rollThrow(st,Math.random), g=gen;
-  rollVisual(th,async()=>{
-    if(g!==gen)return;
-    rolling=false;
-    const snap=snapshot(), info=applyRoll(st,th);
-    const d=describeRoll(st,th.v);
-    $('#big').textContent=th.v===0?'X':th.v; setCapt(()=>describeRoll(st,th.v).head.split(':')[0].toLowerCase());
-    const hs=d.head.replace(': ',' → ').replace(/^./,c=>c.toLowerCase());
-    pushLog([{p:info.p,msg:NAMES[info.p]+_(' tira: ',' throws: ')+hs+'.'}].concat(info.ev));
-    if(info.status==='move'){
-      busy=false; render();
-      if(isCpu(st.turn))later(cpuMove,1000);
-    } else {
-      busy=true; AU.pass();
-      note=()=>describeRoll(st,th.v).head+'. '+(th.v===0?_('Il turno passa.','The turn passes.'):_('Nessuna mossa possibile: il turno passa.','No legal move: the turn passes.'));
-      render(); await wait(1500); if(g!==gen)return;
-      busy=false; next();
-    }
-  });
+  if(isCpu(st.turn))later(cpuMove,700);
 }
 function cpuMove(){
-  if(st.phase!=='move')return;
-  selected=cpuChoose(st,Math.random); render();
-  later(()=>confirm(selected),800);
+  if(st.phase!=='move'||busy)return;
+  const i=cpuChoose(st,level,Math.random); selected=st.moves[i].h; render();
+  later(()=>confirm(selected),650);
 }
-async function confirm(i){
-  const m=st.moves[i]; if(!m||st.phase!=='move')return;
-  busy=true; selected=null; const g=gen, snap=snapshot();
+async function confirm(h){
+  const m=moveOf(h); if(!m||st.phase!=='move'||busy)return;
+  busy=true; selected=null; hintH=null; const g=gen;
   const ev=applyMove(st,m); pushLog(ev);
-  const pr=animateChanges(snap); render();
-  await pr; if(g!==gen)return;
-  if(st.phase==='over'){AU.win(); busy=false; render(); return;}
-  await wait(280); if(g!==gen)return;
-  busy=false; next();
-}
-function activate(t){
-  if(busy||rolling||st.phase!=='move'||isCpu(st.turn))return;
-  AU.click();
-  const pe=t.closest&&t.closest('.piece.movable'), ge=t.closest&&t.closest('.ghost');
-  if(pe){const i=moveFor(st.pieces[+pe.dataset.id]); if(i<0)return; if(selected===i)confirm(i); else{selected=i;render();}}
-  else if(ge){const i=+ge.dataset.idx; if(selected===i)confirm(i); else{selected=i;render();}}
-  else if(selected!=null){selected=null;render();}
-}
-svg.addEventListener('click',e=>activate(e.target));
-svg.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('piece')){e.preventDefault();activate(e.target);}});
-$('#rollBtn').addEventListener('click',doRoll);
-$('#exitBtn').addEventListener('click',doFreeExit);
-
-/* nuova partita */
-let captF=null;
-function setCapt(f){captF=f;$('#capt').textContent=f();}
-langHooks.unshift(()=>{NAMES[0]=_('Avorio','Ivory');NAMES[1]=_('Ebano','Ebony');});
-langHooks.push(()=>{$('#lbls').innerHTML=lblsHTML();if(captF)$('#capt').textContent=captF();if(st)render();});
-function startGame(){
-  gen++; busy=false; rolling=false; selected=null; note='';
-  const f=$('#opts'), rules=f.rules.value, n=+f.npc.value;
-  cpuOn=f.opp.value==='cpu';
-  const tmp={rules}; let first, msg;
-  if(rules==='kendall'){
-    let p=0,vals=[],v; do{v=rollThrow(tmp,Math.random).v; vals.push(NAMES[p]+' '+v); if(v===1)break; p=1-p;}while(vals.length<60);
-    first=v===1?p:0; msg=_('Tiri d\'apertura (si lancia a turno finché uno ottiene 1): ','Opening throws (players throw in turn until one gets 1): ')+vals.join(', ')+_('. Comincia ','. ')+NAMES[first]+_(', sulle caselle pari.',' starts, on the even squares.');
-  } else {
-    let a,b; do{a=rollThrow(tmp,Math.random).v;b=rollThrow(tmp,Math.random).v;}while(a===b);
-    first=a>b?0:1; const L=x=>x===0?'X':x; msg=_('Tiro d\'apertura: ','Opening throw: ')+NAMES[0]+' '+L(a)+', '+NAMES[1]+' '+L(b)+_(' (la X vale meno di tutti). Comincia ',' (X ranks lowest). ')+NAMES[first]+_(', sulle caselle pari: la prima mossa spetta alla pedina in casella 10.',' starts, on the even squares: the first move must be made by the piece on square 10.');
+  animFlag=true; render();
+  shown=await playFx(bd,st.fx,st,alive(g),shown,false); if(g!==gen)return;
+  animFlag=false; shown=st.sc.slice(); busy=false;
+  if(st.phase==='over'){
+    render();
+    if(st.winner==='draw')AU.draw(); else if(isCpu(st.winner))AU.lose(); else AU.win();
+    return;
   }
-  st=newState({rules,n,first});
-  animating.clear(); Object.keys(SLOTS).forEach(k=>delete SLOTS[k]);
-  Object.keys(els).forEach(k=>{els[k].remove();delete els[k];});
-  $('#log').innerHTML=''; pushLog([{msg}]);
-  if(D3)D3.mode(rules==='kendall'?'sticks':'die');
-  document.querySelectorAll('#frame .tslot').forEach(c=>{c.style.display=+c.dataset.i>=n?'none':'';});
-  showDice(restFaces(),true); $('#big').textContent='–'; setCapt(()=>_('in attesa del primo lancio','waiting for the first throw'));
+  if(st.skipped!=null)AU.feed();
   next();
 }
-$('#opts').addEventListener('submit',e=>{e.preventDefault();startGame();});
+function activate(h){
+  if(busy||st.phase!=='move'||isCpu(st.turn)||!moveOf(h))return;
+  AU.click(); note='';
+  if(!cfg.prev||selected===h)confirm(h); else{selected=h;render();}
+}
+svg.addEventListener('click',e=>{const o=e.target.closest&&e.target.closest('.ov');if(o)activate(+o.dataset.h);else if(selected!=null&&!busy){selected=null;render();}});
+svg.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('ov')){e.preventDefault();activate(+e.target.dataset.h);}});
+$('#hintBtn').addEventListener('click',()=>{
+  if(busy||st.phase!=='move'||isCpu(st.turn))return;
+  AU.hint(); const r=rank(st,3); let b=r[0]; r.forEach(x=>{if(x.v>b.v)b=x;});
+  const m=st.moves[b.i]; selected=m.h; note=''; render();
+  $('#status').innerHTML=_('Suggerimento: <b>casa ','Hint: <b>house ')+LETT[m.h]+'</b>. '+describe(m)+(cfg.prev?_(' Tocca di nuovo la casa per confermare.',' Tap the house again to confirm.'):'');
+});
+
+/* nuova partita */
+function startGame(){
+  gen++; busy=false; selected=null; note=''; animFlag=false; hintH=null;
+  const f=$('#opts');
+  cpuOn=f.opp.value==='cpu'; level=+f.lvl.value; const gs=f.gs.value;
+  let first=f.first.value==='r'?(Math.random()<.5?0:1):+f.first.value;
+  const gran=f.gran.value==='1';
+  if(gran!==cfg.gran){cfg.gran=gran;bd=Board(svg,gran);}
+  applyView();
+  st=newState({first,gs}); shown=[0,0];
+  $('#log').innerHTML='';
+  pushLog([{msg:_('Nuova partita: 48 semi, 4 per casa. Comincia ','New game: 48 seeds, 4 per house. ')+_(NAMES[first],NAMES[first]+' starts')+(gs==='all'?_('. Grand slam: si cattura (variante dei Caraibi).','. Grand slam: captures are made (Caribbean variant).'):_('. Grand slam: nessuna cattura (abapa).','. Grand slam: no capture (abapa).'))}]);
+  render(); next();
+}
+/* cambio lingua: nomi e testi del tavoliere, poi pannelli e stato */
+const dynLang=()=>{NAMES[0]=_('Sud','South');NAMES[1]=_('Nord','North');$('#hintBtn').textContent=_('Suggerimento','Hint');bd.relabel();if(st)render();};
+langHooks.unshift(dynLang);dynLang();
 $('#newBtn').addEventListener('click',startGame);
 $('#againBtn').addEventListener('click',startGame);
-function syncOpts(){}
-$('#opts').addEventListener('change',e=>{if(e.target.name==='rules'){$('#opts').npc.value=e.target.value==='kendall'?'7':'5';}});
-$('#optNums').addEventListener('change',e=>svg.classList.toggle('hide-nums',!e.target.checked));
+$('#opts').addEventListener('submit',e=>e.preventDefault());
+$('#opts').addEventListener('change',e=>{
+  const n=e.target.name;
+  if(n==='opp')$('#fsLevel').classList.toggle('off',e.target.value==='two');
+  if(n==='gran'&&!busy){cfg.gran=e.target.value==='1';bd=Board(svg,cfg.gran);applyView();render();}
+});
+$('#optCnt').addEventListener('change',e=>{cfg.cnt=e.target.checked;applyView();});
+$('#optLett').addEventListener('change',e=>{cfg.lett=e.target.checked;applyView();});
+$('#optPrev').addEventListener('change',e=>{cfg.prev=e.target.checked;selected=null;render();});
 /* ===== Audio ===== */
 const AU=(function(){
   let ctx=null,master,sfxG,musG,verb,noiseBuf;
   const S={sfx:true,mus:false};
-  try{const v=localStorage.getItem('senet-audio'); if(v){const o=JSON.parse(v); S.sfx=o.sfx!==false; S.mus=!!o.mus;}}catch(e){}
-  const save=()=>{try{localStorage.setItem('senet-audio',JSON.stringify(S));}catch(e){}};
+  try{const v=localStorage.getItem('wari-audio'); if(v){const o=JSON.parse(v); S.sfx=o.sfx!==false; S.mus=!!o.mus;}}catch(e){}
+  const save=()=>{try{localStorage.setItem('wari-audio',JSON.stringify(S));}catch(e){}};
   function init(){
     if(ctx)return true;
     const AC=window.AudioContext||window.webkitAudioContext; if(!AC)return false;
@@ -1174,18 +1035,27 @@ const AU=(function(){
     s.connect(bp); bp.connect(e); e.connect(sfxG); s.start(t,Math.random()*.5); s.stop(t+d+.03);
   }
   const now=()=>ctx.currentTime+.01;
+  const PENT=[0,2,4,7,9];
+  function kal(f,t,g,d){
+    d=d||1.1; const o=ctx.createOscillator(),o2=ctx.createOscillator(),e=ctx.createGain(),e2=ctx.createGain();
+    o.type='sine';o.frequency.value=f;o2.type='sine';o2.frequency.value=f*5.9;
+    e.gain.setValueAtTime(.0001,t);e.gain.exponentialRampToValueAtTime(g,t+.004);e.gain.exponentialRampToValueAtTime(.0001,t+d);
+    e2.gain.setValueAtTime(.0001,t);e2.gain.exponentialRampToValueAtTime(g*.22,t+.003);e2.gain.exponentialRampToValueAtTime(.0001,t+.14);
+    o.connect(e);o2.connect(e2);e.connect(sfxG);e2.connect(sfxG);o.start(t);o2.start(t);o.stop(t+d+.05);o2.stop(t+.2);
+  }
   const fx={
-    dice(){const t=now();for(let k=0;k<9;k++){const tt=t+k*.11+Math.random()*.04;noise(tt,.045,900+Math.random()*900,Math.max(.12,.6-k*.05),3);tone(260+Math.random()*180,tt,.05,{type:'triangle',to:150,g:.1});}},
-    step(k){const t=now();tone(300+(k%6)*18,t,.07,{type:'triangle',g:.13});noise(t,.03,2200,.07,1);},
-    land(){const t=now();tone(140,t,.16,{to:75,g:.36});noise(t,.06,450,.28,1,'lowpass');},
-    safe(){const t=now();[587,880,1175].forEach((f,i)=>{tone(f,t+i*.08,.8,{g:.15});tone(f*2.01,t+i*.08,.4,{g:.035});});},
-    swap(){const t=now();noise(t,.22,1300,.45,.7);tone(260,t,.18,{type:'sawtooth',to:520,g:.1});tone(520,t+.14,.2,{type:'sawtooth',to:260,g:.1});tone(150,t,.16,{to:70,g:.3});},
-    back(){const t=now();tone(420,t,.22,{type:'triangle',to:240,g:.14});},
-    bad(){const t=now();[392,330,277,220,165].forEach((f,i)=>tone(f,t+i*.11,.4,{type:'sawtooth',g:.09}));noise(t+.1,.5,500,.25,.8,'lowpass');},
-    exit(){const t=now();[523,659,784,1047,1319].forEach((f,i)=>tone(f,t+i*.09,.55,{type:'triangle',g:.17}));},
-    win(){const t=now();[294,370,440,587,740,880].forEach((f,i)=>{tone(f,t+i*.15,1.6,{type:'triangle',g:.17});tone(f*2,t+i*.15,.8,{g:.05});});tone(147,t,2.2,{type:'sawtooth',g:.07});},
-    pass(){const t=now();tone(230,t,.4,{type:'triangle',to:150,g:.15});},
-    click(){const t=now();tone(720,t,.04,{type:'square',g:.04});}
+    pick(){const t=now();for(let k=0;k<6;k++)noise(t+k*.03+Math.random()*.015,.03,3500+Math.random()*2200,.12,2);tone(170,t,.12,{to:120,g:.1});},
+    step(k){const t=now(),n=PENT[k%5]+12*Math.floor(k/5),f=330*Math.pow(2,Math.min(n,26)/12);tone(f,t,.1,{type:'triangle',g:.2});noise(t,.025,3200,.1,1.4);tone(190,t,.06,{to:120,g:.07});},
+    mark(){const t=now();tone(240,t,.18,{type:'triangle',g:.12});tone(320,t+.09,.2,{type:'triangle',g:.12});},
+    capture(n){const t=now();noise(t,.22,1100,.38,.8);tone(120,t,.26,{to:55,g:.34});const k=Math.min(3,n||2);for(let i=0;i<k;i++)kal(523*Math.pow(2,PENT[i+1]/12),t+.05+i*.07,.14,.7);},
+    nocap(){const t=now();tone(300,t,.28,{type:'triangle',to:230,g:.13});tone(210,t+.16,.32,{type:'triangle',to:150,g:.12});},
+    feed(){const t=now();kal(660,t,.12,.6);kal(880,t+.1,.12,.8);},
+    sweep(){const t=now();for(let k=0;k<10;k++)noise(t+k*.04,.04,3000+Math.random()*2500,.1,2);},
+    hint(){const t=now();kal(784,t,.14,.6);kal(1175,t+.1,.12,.8);},
+    win(){const t=now();[0,2,4,7,9,12,14,16].forEach((n,i)=>kal(262*Math.pow(2,n/12),t+i*.12,.17,1.4));tone(98,t,1.4,{type:'triangle',g:.14});noise(t,.2,900,.3,.8);},
+    lose(){const t=now();[7,4,2,0].forEach((n,i)=>kal(392*Math.pow(2,(n-12)/12),t+i*.2,.15,1.2));},
+    draw(){const t=now();kal(392,t,.14,1);kal(392,t+.25,.12,1.2);},
+    click(){const t=now();tone(640,t,.04,{type:'triangle',g:.05});}
   };
   const api={S,
     unlock(){if(!init())return; if(ctx.state==='suspended')ctx.resume().then(()=>{if(S.mus)Music.start();}); else if(S.mus)Music.start();},
@@ -1196,97 +1066,86 @@ const AU=(function(){
   return api;
 })();
 
-/* colonna sonora procedurale: bordone, arpa pizzicata, flauto (nay), tamburo darbuka, sistro. Scala doppia armonica su re */
+/* colonna sonora procedurale di ispirazione africana: mbira a due voci incrociate, balafon, djembe, campana (gankogui), shekere.
+   Metro 12/8, ciclo di quattro battute C-F-C-G, melodie pentatoniche in botta e risposta. */
 const Music=(function(){
-  let on=false,timer=null,nextT=0,step=0,bar=0,deg=3,drone=null,cache={},phrase=[];
-  const BPM=76,B=60/BPM,D=146.83;
-  const SCL=[0,1,4,5,7,8,11,12,13,16,17,19,20,23];
-  const fr=n=>D*Math.pow(2,n/12);
-  function pluckBuf(ctx,freq){
-    const key=Math.round(freq); if(cache[key])return cache[key];
-    const sr=ctx.sampleRate,len=Math.floor(sr*2.8),buf=ctx.createBuffer(1,len,sr),d=buf.getChannelData(0),N=Math.max(2,Math.round(sr/freq));
-    const ring=new Float32Array(N); for(let i=0;i<N;i++)ring[i]=(Math.random()*2-1)*(1-i/N*.3);
-    let p=0,prev=0,mx=0;
-    for(let i=0;i<len;i++){const c=ring[p];d[i]=c;ring[p]=(c+prev)*.5*.9985;prev=c;p=(p+1)%N;if(Math.abs(c)>mx)mx=Math.abs(c);}
-    for(let i=0;i<len;i++)d[i]/=mx||1;
-    return cache[key]=buf;
+  let on=false,timer=null,nextT=0,pulse=0,bar=0,phrase=[],resp=[];
+  const BPM=94,P=60/BPM/3,C4=261.63;
+  const fr=n=>C4*Math.pow(2,n/12);
+  const CH=[[0,4,7,12],[5,9,12,17],[0,4,7,12],[7,11,14,19]], PENT=[0,2,4,7,9];
+  const out=(node,g,send)=>{const ctx=AU.ctx();node.connect(AU.mus());if(send){const w=ctx.createGain();w.gain.value=send;node.connect(w);w.connect(AU.verb());}};
+  function mbira(f,t,g,d){
+    const ctx=AU.ctx(),o=ctx.createOscillator(),o2=ctx.createOscillator(),e=ctx.createGain(),e2=ctx.createGain(),m=ctx.createGain();
+    d=d||(f<400?1.5:1);
+    o.frequency.value=f;o2.frequency.value=f*5.95;
+    e.gain.setValueAtTime(.0001,t);e.gain.exponentialRampToValueAtTime(g,t+.004);e.gain.exponentialRampToValueAtTime(.0001,t+d);
+    e2.gain.setValueAtTime(.0001,t);e2.gain.exponentialRampToValueAtTime(g*.2,t+.003);e2.gain.exponentialRampToValueAtTime(.0001,t+.12);
+    o.connect(e);o2.connect(e2);e.connect(m);e2.connect(m);out(m,1,.3);o.start(t);o2.start(t);o.stop(t+d+.05);o2.stop(t+.2);
   }
-  function harp(freq,t,g){
-    const ctx=AU.ctx(),s=ctx.createBufferSource(); s.buffer=pluckBuf(ctx,freq);
-    const e=ctx.createGain(); e.gain.value=g; const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3200;
-    s.connect(lp); lp.connect(e); e.connect(AU.mus()); const w=ctx.createGain(); w.gain.value=.55; e.connect(w); w.connect(AU.verb()); s.start(t);
+  function balafon(f,t,g,d){
+    const ctx=AU.ctx(),o=ctx.createOscillator(),o2=ctx.createOscillator(),e=ctx.createGain(),m=ctx.createGain(),bp=ctx.createBiquadFilter();
+    d=d||.5;o.type='triangle';o.frequency.value=f;o2.type='sine';o2.frequency.value=f*3.9;
+    e.gain.setValueAtTime(.0001,t);e.gain.exponentialRampToValueAtTime(g,t+.005);e.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.connect(e);o2.connect(e);e.connect(m);
+    const s=ctx.createBufferSource();s.buffer=AU.noise();s.loop=true;bp.type='bandpass';bp.frequency.value=3200;bp.Q.value=3;const ne=ctx.createGain();
+    ne.gain.setValueAtTime(g*.12,t);ne.gain.exponentialRampToValueAtTime(.0001,t+d*.6);s.connect(bp);bp.connect(ne);ne.connect(m);s.start(t,Math.random()*.4);s.stop(t+d);
+    out(m,1,.35);o.start(t);o2.start(t);o.stop(t+d+.05);o2.stop(t+d+.05);
   }
-  function drum(t,kind){
-    const ctx=AU.ctx();
-    if(kind==='D'){
-      const o=ctx.createOscillator(),e=ctx.createGain(); o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(70,t+.16);
-      e.gain.setValueAtTime(.0001,t); e.gain.exponentialRampToValueAtTime(.5,t+.008); e.gain.exponentialRampToValueAtTime(.0001,t+.28);
-      o.connect(e); e.connect(AU.mus()); o.start(t); o.stop(t+.32);
-    } else {
-      const s=ctx.createBufferSource(); s.buffer=AU.noise(); s.loop=true; const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=kind==='T'?3000:2200; bp.Q.value=1.6;
-      const e=ctx.createGain(); e.gain.setValueAtTime(kind==='T'?.2:.1,t); e.gain.exponentialRampToValueAtTime(.0001,t+.07);
-      s.connect(bp); bp.connect(e); e.connect(AU.mus()); s.start(t,Math.random()*.4); s.stop(t+.1);
-    }
+  function djembe(t,k,g){
+    const ctx=AU.ctx();g=g||1;
+    if(k==='B'){const o=ctx.createOscillator(),e=ctx.createGain();o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(58,t+.2);e.gain.setValueAtTime(.0001,t);e.gain.exponentialRampToValueAtTime(.55*g,t+.006);e.gain.exponentialRampToValueAtTime(.0001,t+.4);o.connect(e);out(e,1,.15);o.start(t);o.stop(t+.45);}
+    else if(k==='T'||k==='g'){const o=ctx.createOscillator(),e=ctx.createGain();const gg=(k==='g'?.12:.3)*g;o.frequency.setValueAtTime(240,t);o.frequency.exponentialRampToValueAtTime(190,t+.1);e.gain.setValueAtTime(.0001,t);e.gain.exponentialRampToValueAtTime(gg,t+.004);e.gain.exponentialRampToValueAtTime(.0001,t+.16);o.connect(e);out(e,1,.1);o.start(t);o.stop(t+.2);}
+    else if(k==='S'){const s=ctx.createBufferSource();s.buffer=AU.noise();s.loop=true;const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2700;bp.Q.value=1.1;const e=ctx.createGain();
+      e.gain.setValueAtTime(.34*g,t);e.gain.exponentialRampToValueAtTime(.0001,t+.1);s.connect(bp);bp.connect(e);out(e,1,.1);s.start(t,Math.random()*.4);s.stop(t+.12);
+      const o=ctx.createOscillator(),e2=ctx.createGain();o.frequency.value=420;e2.gain.setValueAtTime(.1*g,t);e2.gain.exponentialRampToValueAtTime(.0001,t+.06);o.connect(e2);out(e2,1);o.start(t);o.stop(t+.08);}
   }
-  function sistrum(t){
-    const ctx=AU.ctx();
-    for(let k=0;k<4;k++){
-      const tt=t+k*.035, s=ctx.createBufferSource(); s.buffer=AU.noise(); s.loop=true; const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=6500;
-      const e=ctx.createGain(); e.gain.setValueAtTime(.05-k*.008,tt); e.gain.exponentialRampToValueAtTime(.0001,tt+.05);
-      s.connect(hp); hp.connect(e); e.connect(AU.mus()); s.start(tt,Math.random()*.4); s.stop(tt+.07);
-    }
+  function bell(t,hi){
+    const ctx=AU.ctx(),f=hi?1180:860,e=ctx.createGain(),hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=600;
+    e.gain.setValueAtTime(.07,t);e.gain.exponentialRampToValueAtTime(.0001,t+.14);
+    [f,f*1.504,f*2.41].forEach((x,i)=>{const o=ctx.createOscillator();o.type=i?'sine':'square';o.frequency.value=x;const gg=ctx.createGain();gg.gain.value=i?.5:.35;o.connect(gg);gg.connect(hp);o.start(t);o.stop(t+.16);});
+    hp.connect(e);out(e,1);
   }
-  function flute(freq,t,d){
-    const ctx=AU.ctx(),o=ctx.createOscillator(),o2=ctx.createOscillator(),lfo=ctx.createOscillator(),lg=ctx.createGain(),e=ctx.createGain(),lp=ctx.createBiquadFilter();
-    o.type='sine'; o2.type='triangle'; o.frequency.value=freq; o2.frequency.value=freq*2.003; lfo.frequency.value=5.2; lg.gain.value=freq*.009;
-    lfo.connect(lg); lg.connect(o.frequency); lg.connect(o2.frequency); lp.type='lowpass'; lp.frequency.value=2400;
-    e.gain.setValueAtTime(.0001,t); e.gain.exponentialRampToValueAtTime(.11,t+Math.min(.12,d*.3)); e.gain.setTargetAtTime(.0001,t+d*.75,d*.12);
-    const m2=ctx.createGain(); m2.gain.value=.18; o2.connect(m2); o.connect(lp); m2.connect(lp);
-    const s=ctx.createBufferSource(); s.buffer=AU.noise(); s.loop=true; const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=freq*3; bp.Q.value=2;
-    const ne=ctx.createGain(); ne.gain.setValueAtTime(.025,t); ne.gain.exponentialRampToValueAtTime(.0001,t+d); s.connect(bp); bp.connect(ne); ne.connect(lp); s.start(t,Math.random()*.4); s.stop(t+d+.05);
-    lp.connect(e); e.connect(AU.mus()); const w=ctx.createGain(); w.gain.value=.8; e.connect(w); w.connect(AU.verb());
-    [o,o2,lfo].forEach(x=>{x.start(t);x.stop(t+d+.1);});
+  function shaker(t,acc){
+    const ctx=AU.ctx(),s=ctx.createBufferSource();s.buffer=AU.noise();s.loop=true;const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=6000;const e=ctx.createGain();
+    e.gain.setValueAtTime(acc?.07:.032,t);e.gain.exponentialRampToValueAtTime(.0001,t+.07);s.connect(hp);hp.connect(e);out(e,1);s.start(t,Math.random()*.4);s.stop(t+.09);
   }
-  function startDrone(){
-    const ctx=AU.ctx(),g=ctx.createGain(); g.gain.value=.075; const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=380;
-    const lfo=ctx.createOscillator(),lg=ctx.createGain(); lfo.frequency.value=.06; lg.gain.value=140; lfo.connect(lg); lg.connect(lp.frequency);
-    const oscs=[[D/2,'sawtooth'],[D*.75,'sawtooth'],[D/2*1.005,'triangle'],[D,'triangle']].map(a=>{const o=ctx.createOscillator();o.type=a[1];o.frequency.value=a[0];o.connect(lp);o.start();return o;});
-    lfo.start(); lp.connect(g); g.connect(AU.mus()); const w=ctx.createGain(); w.gain.value=.6; g.connect(w); w.connect(AU.verb());
-    return {stop(){oscs.forEach(o=>{try{o.stop();}catch(e){}});try{lfo.stop();}catch(e){}}};
+  function bass(f,t,g){
+    const ctx=AU.ctx(),o=ctx.createOscillator(),e=ctx.createGain(),lp=ctx.createBiquadFilter();o.type='triangle';o.frequency.value=f;lp.type='lowpass';lp.frequency.value=420;
+    e.gain.setValueAtTime(.0001,t);e.gain.exponentialRampToValueAtTime(g,t+.01);e.gain.exponentialRampToValueAtTime(.0001,t+.55);o.connect(lp);lp.connect(e);out(e,1);o.start(t);o.stop(t+.6);
   }
-  const RH=['D','T','','T','D','','T','K'];
-  function newPhrase(){
-    const len=4+Math.floor(Math.random()*3); let d=Math.floor(Math.random()*SCL.length), out=[];
-    for(let i=0;i<len;i++){d=Math.max(2,Math.min(SCL.length-1,d+(Math.random()<.5?-1:1)*(1+Math.floor(Math.random()*2))));out.push({n:SCL[d]+12,b:[1,1,2,3][Math.floor(Math.random()*4)]});}
-    out[len-1].n=[12,19,24][Math.floor(Math.random()*3)]; out[len-1].b=4; return out;
+  const BELL=[1,0,1,0,1,1,0,1,0,1,0,1], BH=[1,0,0,0,1,0,0,1,0,0,0,1];
+  const DJA=['B','','','T','','S','B','','S','','T',''], DJB=['B','','T','','S','','B','S','','T','','S'];
+  function newPhrase(len){
+    const pos=[0,3,5,6,8,9,12,15,17,18,20,21].filter(x=>x<len*12), take=5+Math.floor(Math.random()*3);
+    const pick=pos.slice().sort(()=>Math.random()-.5).slice(0,take).sort((a,b)=>a-b);
+    let d=2+Math.floor(Math.random()*3);
+    const out=pick.map(p=>{d=Math.max(0,Math.min(9,d+(Math.random()<.5?-1:1)*(Math.random()<.7?1:2)));return{p,n:PENT[d%5]+12*Math.floor(d/5)};});
+    out[out.length-1].n=[0,7,12][Math.floor(Math.random()*3)]; return out;
   }
   function sched(t,s){
-    const r=RH[s]; if(r)drum(t,r);
-    if(s%2===1&&bar%2===0)sistrum(t);
-    if((s===0||s===3||s===4||s===6)&&Math.random()<.78){
-      const rr=Math.random(); const dd=rr<.55?(Math.random()<.5?-1:1):(rr<.9?(Math.random()<.5?-2:2):(Math.random()<.5?-3:3));
-      deg=Math.max(0,Math.min(SCL.length-2,deg+dd)); harp(fr(SCL[deg]),t,.5+Math.random()*.25);
-      if(s===0&&Math.random()<.4)harp(fr(SCL[deg])*2,t+B*.25,.22);
-    }
-    if(s===0&&bar%4===1){phrase=newPhrase();}
-    if(bar%4===2&&phrase.length&&s===0){let tt=t; phrase.forEach(p=>{flute(fr(p.n),tt,p.b*B*.5*.92);tt+=p.b*B*.5;});}
+    const ch=CH[bar%4],odd=bar%2;
+    if(BELL[s])bell(t,BH[s]);
+    const dj=(odd?DJB:DJA)[s]; if(dj)djembe(t,dj,.9+Math.random()*.2); else if(Math.random()<.16)djembe(t,'g',1);
+    shaker(t,s%3===0);
+    if(s===0||(s===6&&bar%2===1))bass(fr(ch[0]-24),t,.34);
+    /* mbira: voce bassa su 0,3,6,9 e voce alta sfalsata su 2,5,8,11 */
+    if(s%3===0){const idx=[0,2,1,2][s/3];mbira(fr(ch[idx]-12),t,.15);}
+    if(s%3===2){const idx=[3,1,2,1][(s-2)/3];mbira(fr(ch[idx]),t,.12);}
+    if(s%3===1&&Math.random()<.32){mbira(fr(ch[Math.floor(Math.random()*4)]+12),t,.07,.7);}
+    /* botta e risposta: balafon (battute 2-3), risposta di mbira un'ottava sopra (battute 6-7) */
+    const b8=bar%8;
+    if(b8===2&&s===0)phrase=newPhrase(2);
+    if(b8===2||b8===3){const q=(b8-2)*12+s;phrase.filter(x=>x.p===q).forEach(x=>balafon(fr(x.n+12),t,.17,x===phrase[phrase.length-1]?.9:.5));}
+    if(b8===6||b8===7){const q=(b8-6)*12+s;phrase.filter(x=>x.p===q).forEach(x=>mbira(fr(x.n+(x.n+12<=19?12:0)+12),t,.12,.9));}
   }
   function tick(){
-    const ctx=AU.ctx(); if(!ctx||!on)return;
-    while(nextT<ctx.currentTime+.7){sched(nextT,step);nextT+=B/2;step=(step+1)%8;if(step===0)bar++;}
+    const ctx=AU.ctx();if(!ctx||!on)return;
+    while(nextT<ctx.currentTime+.7){sched(nextT,pulse);nextT+=P;pulse=(pulse+1)%12;if(pulse===0)bar++;}
   }
   return {
-    start(){
-      const ctx=AU.ctx(); if(!ctx||on)return; on=true;
-      drone=startDrone(); nextT=ctx.currentTime+.2; step=0; bar=0; phrase=[];
-      AU.mus().gain.cancelScheduledValues(ctx.currentTime); AU.mus().gain.setTargetAtTime(.55,ctx.currentTime,.9);
-      timer=setInterval(tick,120); tick();
-    },
-    stop(){
-      const ctx=AU.ctx(); if(!ctx||!on)return; on=false; clearInterval(timer);
-      AU.mus().gain.cancelScheduledValues(ctx.currentTime); AU.mus().gain.setTargetAtTime(0,ctx.currentTime,.35);
-      const d=drone; drone=null; setTimeout(()=>{if(d)d.stop();},1800);
-    },
+    start(){const ctx=AU.ctx();if(!ctx||on)return;on=true;nextT=ctx.currentTime+.2;pulse=0;bar=0;phrase=newPhrase(2);
+      AU.mus().gain.cancelScheduledValues(ctx.currentTime);AU.mus().gain.setTargetAtTime(.6,ctx.currentTime,.6);timer=setInterval(tick,120);tick();},
+    stop(){const ctx=AU.ctx();if(!ctx||!on)return;on=false;clearInterval(timer);AU.mus().gain.cancelScheduledValues(ctx.currentTime);AU.mus().gain.setTargetAtTime(0,ctx.currentTime,.3);},
     isOn:()=>on
   };
 })();
@@ -1297,38 +1156,35 @@ $('#optMusic').addEventListener('change',e=>{AU.setMus(e.target.checked);syncStM
 
 /* ===== Storia ===== */
 const STORY=[
- {t:'Senet',b:'Il gioco del passaggio',art:'ankh',en:{t:'Senet',b:'The game of passing'}},
- {k:'Antico Egitto',b:'Il senet è uno dei giochi più antichi di cui si abbia notizia. Alcuni lo considerano un antenato del backgammon.',en:{k:'Ancient Egypt',b:'Senet is one of the oldest games of which there is any record. Some regard it as an ancestor of backgammon.'}},
- {k:'Nelle tombe',b:'La sua storia è raccontata dai reperti ritrovati nelle tombe del Medio e del Nuovo Regno: tavole, pedine, immagini di giocatori.',art:'board',en:{k:'In the tombs',b:'Its history is told by finds from tombs of the Middle and New Kingdoms: boards, pieces, images of players.'}},
- {k:'Il nome',b:'Senet significa «passaggio». Il gioco era una sfida, ma portava con sé un significato religioso: il passaggio dalla vita terrena all\'aldilà.',art:'eye',en:{k:'The name',b:'Senet means «passing». The game was a contest, but it also carried a religious meaning: the passage from earthly life to the afterlife.'}},
- {k:'I faraoni',b:'All\'inizio lo giocava soltanto la classe più alta, quella dei faraoni.',en:{k:'The pharaohs',b:'At first it was played only by the highest class, that of the pharaohs.'}},
- {k:'Intorno al 1500 a.C.',b:'Il senet diventa un gioco per tutti. E assume un nuovo significato: si comincia a credere che la sorte dopo la morte dipenda da una partita.',art:'sun',en:{k:'Around 1500 BC',b:'Senet becomes a game for everyone. It also takes on a new meaning: people begin to believe that one\'s fate after death depends on a game.'}},
- {k:'Il defunto e il Destino',b:'Una partita giocata dal defunto contro il Destino in persona. È il motivo per cui le tombe sono piene di giochi, immagini e spiegazioni di partite.',en:{k:'The deceased and Fate',b:'A game played by the deceased against Fate in person. This is why tombs are full of games, images and explanations of games.'}},
- {k:'Tutankhamon',b:'Nella sua tomba sono stati ritrovati tavoli da gioco in legno e avorio, con i cassetti per le pedine sotto la tavola.',art:'board',en:{k:'Tutankhamun',b:'His tomb held gaming boards of wood and ivory, with drawers for the pieces beneath the board.'}},
- {k:'Geroglifici',b:'Figure di giocatori di senet compaiono anche nei geroglifici che raccontano la vita quotidiana e il passaggio dalla vita alla morte.',en:{k:'Hieroglyphs',b:'Figures of senet players also appear in hieroglyphs describing daily life and the passage from life to death.'}},
- {k:'I legnetti',b:'Si lanciavano quattro legnetti a mezzo cilindro: convessi e neri da un lato, piani e bianchi dall\'altro. Il punteggio era il numero di facce bianche.',art:'sticks',en:{k:'The casting sticks',b:'Four half-cylinder sticks were thrown: convex and black on one side, flat and white on the other. The score was the number of white faces.'}},
- {k:'Il viaggio',b:'Trenta caselle in tre file. Le ultime cinque hanno un significato speciale: la rinascita, l\'abbondanza, la malasorte, le tre verità, Horus, Ra.',art:'water',en:{k:'The journey',b:'Thirty squares in three rows. The last five have a special meaning: rebirth, abundance, misfortune, the three truths, Horus, Ra.'}},
- {k:'Regole perdute',b:'Nessuna copia integrale delle regole è arrivata fino a noi. Studiosi come Timothy Kendall e R.C. Bell le hanno ricostruite: oggi esistono molte varianti.',en:{k:'Lost rules',b:'No complete copy of the rules has survived. Scholars such as Timothy Kendall and R.C. Bell have reconstructed them: many variants exist today.'}},
- {k:'Fino alla fine',b:'In epoca antica forse entrambi i giocatori dovevano concludere la partita. Chi era uscito per primo non abbandonava l\'altro: lo assisteva fino alla meta.',en:{k:'To the very end',b:'In antiquity both players may have had to finish the game. The one who had borne off first did not abandon the other, but assisted them to the goal.'}},
- {k:'Nella cultura di massa',b:'Il senet compare nel videogioco «Egypt 1156 a.C.: l\'enigma della tomba reale» (Cryo Interactive, 1997), in «Tomb Raider: The Last Revelation» (1999) e nella serie «Lost», come passatempo del giovane Jacob e di suo fratello.',en:{k:'In popular culture',b:'Senet appears in the video game «Egypt 1156 B.C.: Tomb of the Pharaoh» (Cryo Interactive, 1997), in «Tomb Raider: The Last Revelation» (1999) and in the series «Lost», as a pastime of the young Jacob and his brother.'}},
- {t:'Tocca a te',b:'Trenta caselle, cinque o sette pedine. Porta tutto nell\'aldilà.',art:'ankh',en:{t:'Your turn',b:'Thirty squares, five or seven pieces. Bear them all off to the afterlife.'}},
- {k:'Fonti',b:'Voce «Senet», Wikipedia, e regole di Timothy Kendall e R.C. Bell nell\'adattamento UniNerd.',small:true,en:{k:'Sources',b:'The «Senet» entry on Wikipedia, and the rules of Timothy Kendall and R.C. Bell as adapted by UniNerd.'}}
+ {t:'Wari',b:'Il gioco delle «case»',art:'pits',en:{"t": "Wari", "b": "The game of the “houses”"}},
+ {k:'Una famiglia di giochi',b:'Non esiste un gioco chiamato mancala: è il nome di un\'intera famiglia di giochi di semina, diffusi in Africa, Medio Oriente, Sudest asiatico e America centrale.',art:'pits4',en:{"k": "A family of games", "b": "There is no single game called mancala: it is the name of a whole family of sowing games, found in Africa, the Middle East, Southeast Asia and Central America."}},
+ {k:'Il nome',b:'«Mancala» è una parola araba, dal verbo naqala: «spostare». Bao viene dallo swahili mbao, «tavola»; Omweso da mchezo, «gioco». Wari significa «case».',en:{"k": "The name", "b": "“Mancala” is an Arabic word, from the verb naqala: “to move”. Bao comes from the Swahili mbao, “board”; Omweso from mchezo, “game”. Wari means “houses”."}},
+ {k:'Buche e semi',b:'Due o quattro file di buche, scavate nella sabbia, intagliate nel legno o nella pietra. Per pezzi, semi di Caesalpinia, fagioli, sassi o piccole conchiglie.',art:'seeds',en:{"k": "Pits and seeds", "b": "Two or four rows of pits, dug in the sand or carved in wood or stone. The pieces are Caesalpinia seeds, beans, pebbles or small shells."}},
+ {k:'Origini incerte',b:'La storia dei mancala non è chiara. Si citano buche scavate in un pavimento neolitico di \'Ain Ghazal, tavolieri romani a Gedera, reperti di Aksum del VI-VII secolo. La prima menzione scritta è nel Libro dei Canti, nel X secolo.',en:{"k": "Uncertain origins", "b": "The history of mancala is unclear. Sources mention pits dug in a Neolithic floor at 'Ain Ghazal, Roman boards at Gedera, and finds from Aksum dated to the 6th–7th century. The first written mention is in the Book of Songs, in the 10th century."}},
+ {k:'Dall\'Africa al mondo',b:'Il luogo d\'origine fu probabilmente l\'Africa. Gli arabi lo portarono in Asia; i mercanti inglesi lo giocavano nel Seicento; nei paesi baltici era il Bohnenspiel.',art:'sowing',en:{"k": "From Africa to the world", "b": "The place of origin was probably Africa. Arabs brought the game to Asia; English merchants played it in the 17th century; in the Baltic countries it was the Bohnenspiel."}},
+ {k:'Nelle Americhe',b:'Con la tratta degli schiavi il gioco attraversò l\'Atlantico. Nei Caraibi il mancala più giocato è il wari, che ad Antigua chiamano warri; l\'albero dei suoi semi è detto «albero del Warri».',en:{"k": "In the Americas", "b": "With the slave trade the game crossed the Atlantic. In the Caribbean the most played mancala is wari, which in Antigua is called warri; the tree that bears its seeds is known as the “Warri tree”."}},
+ {k:'Molti nomi',b:'Wari, owari o ayo in Nigeria, Niger e Ghana. Oware per gli Akan. Ouril a Capo Verde. Awalé in Costa d\'Avorio. Warri a Barbados, awari nelle Antille.',en:{"k": "Many names", "b": "Wari, owari or ayo in Nigeria, Niger and Ghana. Oware among the Akan. Ouril in Cape Verde. Awalé in Ivory Coast. Warri in Barbados, awari in the Antilles."}},
+ {k:'Il mancala più diffuso',b:'Il wari è la variante più giocata al mondo. Si crede di origine ashanti. Si disputano campionati a Barbados, in Ghana, in Nigeria, ma anche in Inghilterra, in Francia e in Catalogna.',art:'pits',en:{"k": "The most widespread mancala", "b": "Wari is the most played variant in the world. It is believed to be of Ashanti origin. Championships are held in Barbados, Ghana and Nigeria, but also in England, France and Catalonia."}},
+ {k:'Un gioco che unisce',b:'In molte società africane i mancala sono un momento di incontro, e uno strumento per insegnare l\'aritmetica ai bambini.',en:{"k": "A game that brings people together", "b": "In many African societies mancala is an occasion for meeting, and a tool for teaching arithmetic to children."}},
+ {k:'Semina magica',b:'In varie lingue il gioco è «semina magica», legata ai buoni raccolti. In Suriname si gioca ai funerali, per tenere compagnia al defunto. In alcune regioni, di notte, le tavole si lasciano fuori dalla porta perché gli spiriti possano giocare.',en:{"k": "Magic sowing", "b": "In several languages the game is “magic sowing”, linked to good harvests. In Suriname it is played at funerals, to keep the deceased company. In some regions the boards are left outside the door at night so that spirits can play."}},
+ {k:'Senza fortuna',b:'Nessun dado, nessuna carta: ogni mossa è visibile a entrambi. Per questo logici e matematici lo studiano. In molte culture africane, però, pensarci troppo è scortese: in Uganda l\'omweso si gioca velocissimo.',en:{"k": "No luck involved", "b": "No dice, no cards: every move is visible to both players. This is why logicians and mathematicians study it. In many African cultures, however, thinking too long is impolite: in Uganda omweso is played very fast."}},
+ {k:'Dar da mangiare',b:'Quasi ovunque l\'avversario in carestia va soccorso: se può, chi muove deve dargli dei semi. Gli antropologi vi vedono un raro caso di solidarietà codificata come regola.',art:'seeds',en:{"k": "Feeding the opponent", "b": "Almost everywhere an opponent who has run out of seeds must be helped: if possible, the player to move must give them some. Anthropologists see in this a rare case of solidarity codified as a rule."}},
+ {k:'Il «Chess» del Terzo Mondo',b:'Nei Caraibi lo chiamano gli scacchi del Terzo Mondo, ma più rapido e più vivace: una partita dura da cinque a quindici minuti.',en:{"k": "The “chess” of the Third World", "b": "In the Caribbean it is called the chess of the Third World, but faster and livelier: a game lasts from five to fifteen minutes."}},
+ {k:'Mosse in mano',b:'La strategia dei mancala ruota intorno alla mobilità: le mosse che non danno semi all\'avversario. Chi ne ha di più comanda la partita.',en:{"k": "Moves in hand", "b": "Mancala strategy revolves around mobility: the moves that give no seeds to the opponent. Whoever has more of them controls the game."}},
+ {t:'Tocca a te',b:'Dodici case, quarantotto semi. Ne bastano venticinque.',art:'pits',en:{"t": "Your turn", "b": "Twelve houses, forty-eight seeds. Twenty-five are enough."}},
+ {k:'Fonti',b:'Voci «Wari», «Oware» e «Mancala» di Wikipedia, in italiano e in inglese, e «How to play Warri» di David Chamberlin.',small:true,en:{"k": "Sources", "b": "Wikipedia entries “Wari”, “Oware” and “Mancala”, in Italian and English, and “How to play Warri” by David Chamberlin."}}
 ];
 function artSVG(a){
   const gold='#c9a860';
-  const gl=(inner,vb)=>'<svg viewBox="'+(vb||'-450 -450 900 900')+'" aria-hidden="true" fill="none" stroke="'+gold+'" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 22px rgba(214,170,90,.4))">'+inner+'</svg>';
-  if(a==='ankh')return gl(GL[15]());
-  if(a==='eye')return gl(GL[29]());
-  if(a==='water')return gl(GL[27]());
-  if(a==='sun')return gl(GL[30]());
-  if(a==='board'){
-    let r='';for(let rr=0;rr<3;rr++)for(let c=0;c<10;c++)r+='<rect x="'+(c*110)+'" y="'+(rr*110)+'" width="100" height="100" rx="8" fill="'+((rr*10+c+1===15||(rr*10+c+1)>=26)?'rgba(201,168,96,.25)':'none')+'" stroke="'+gold+'" stroke-width="5"/>';
-    return '<svg viewBox="-10 -10 1120 350" aria-hidden="true">'+r+'</svg>';
+  const wrap=(inner,vb)=>'<svg viewBox="'+vb+'" aria-hidden="true" fill="none" stroke="'+gold+'" stroke-width="10" stroke-linecap="round" style="filter:drop-shadow(0 0 22px rgba(214,170,90,.4))">'+inner+'</svg>';
+  const pit=(x,y,r,n)=>{let s='<circle cx="'+x+'" cy="'+y+'" r="'+r+'"/>';for(let i=0;i<n;i++){const t=i*2.4,d=i?r*.5*Math.sqrt(i/Math.max(n,4)+.2):0;s+='<circle cx="'+(x+d*Math.cos(t)).toFixed(1)+'" cy="'+(y+d*Math.sin(t)).toFixed(1)+'" r="'+(r*.2).toFixed(1)+'" fill="'+gold+'" stroke="none"/>';}return s;};
+  if(a==='pits'||a==='pits4'){
+    const rows=a==='pits'?2:4;let s='';
+    for(let r=0;r<rows;r++)for(let c=0;c<6;c++)s+=pit(60+c*100,60+r*100,38,4);
+    return wrap(s,'0 0 640 '+(rows*100+20));
   }
-  if(a==='sticks'){
-    let r='';[0,1,2,3].forEach(i=>{r+='<rect x="'+(20+i*70)+'" y="20" width="44" height="190" rx="22" fill="'+(i%2?'#1a1a1f':'#f2e8c9')+'" stroke="'+gold+'" stroke-width="5"/>';});
-    return '<svg viewBox="0 0 320 230" aria-hidden="true">'+r+'</svg>';
-  }
+  if(a==='seeds'){let s='';[[200,100],[260,140],[140,150],[210,180],[290,90],[120,90],[330,160],[170,60]].forEach(p=>{s+='<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="26" ry="22" fill="rgba(201,168,96,.35)"/>';});return wrap(s,'60 20 340 200');}
+  if(a==='sowing'){let s='';for(let c=0;c<5;c++)s+=pit(60+c*100,70,38,c<4?1:0);s+='<path d="M60 20Q160 -20 260 20" marker-end="none"/><path d="M250 8l14 12l-18 6"/>';return wrap(s,'0 -30 560 150');}
   return '';
 }
 const Story=(function(){
@@ -1401,201 +1257,132 @@ langHooks.push(()=>{Story.refresh();syncStMus();});
 syncStMus();
 
 /* ===== Regole illustrate ===== */
-const rg=(a,b)=>Array.from({length:b-a+1},(_,i)=>a+i);
 const chipH=(txt,cls,pre)=>'<span class="chip '+(cls||'')+'">'+(pre||'')+txt+'</span>';
 const okc=t=>chipH(t,'ok','<span class="g">✓</span>'), noc=t=>chipH(t,'no','<span class="g">✕</span>'), resc=(t,c)=>chipH(t,'res '+(c||''));
-const stkH=arr=>arr.map(w=>'<svg class="stk" viewBox="0 0 26 70"><rect x="3" y="2" width="20" height="66" rx="7" fill="'+(w?'#f6efd9':'#14161a')+'" stroke="#0a2c3a" stroke-width="2"/></svg>').join('');
-const dieH=f=>'<svg class="die" viewBox="0 0 48 48"><rect x="3" y="3" width="42" height="42" rx="9" fill="#2a93ad" stroke="#0a2c3a" stroke-width="2"/>'+(f===6?'<path d="M15 15L33 33M33 15L15 33" stroke="#f6efd9" stroke-width="4" stroke-linecap="round"/>':tally(f))+'</svg>';
-function diceTable(rows){
-  return '<div class="dt">'+rows.map(r=>'<div class="dtr"><div class="dtd">'+r.icon+'</div><div class="dtv">'+r.big+'</div><div class="dtt"><b>'+r.t+'</b>'+(r.s?'<span>'+r.s+'</span>':'')+'</div>'
-    +'<div class="dtp"><span class="bar"><i style="width:'+r.bar+'%"></i></span><span>'+r.pt+'</span></div></div>').join('')+'</div>';
+/* posizione dalla notazione del testo: riga alta a..f da sinistra, riga bassa F..A da sinistra */
+const T=(top,bot)=>{const b=new Array(12);for(let i=0;i<6;i++){b[i]=bot[i];b[11-i]=top[i];}return b;};
+const OPEN=[4,4,4,4,4,4,4,4,4,4,4,4], FULL=[0,1,2,3,4,5,6,7,8,9,10,11];
+const SL_IT=[
+ {t:'Il tavoliere',p:['Il tavoliere ha <b>dodici case</b> in due file da sei, più (se ci sono) due granai laterali per i semi catturati. Wari significa «case».','<b>Sud</b> controlla la fila in basso (A-F), <b>Nord</b> quella in alto (a-f). I semi sono 48, <b>quattro per casa</b>. Si gioca a turno e si muove una sola casa alla volta.','Il senso della semina è <b>antiorario</b>: nella fila di Sud si va verso destra, poi si sale e si prosegue nella fila di Nord verso sinistra.'],
+  sc:{b:OPEN,arrows:[FULL],chips:[chipH('Sud: A-F'),chipH('Nord: a-f'),chipH('Semina antioraria')]}},
+ {t:'Lo scopo',p:['Vince chi <b>cattura più semi</b> dell\'avversario. Poiché i semi sono 48, ne bastano <b>25</b>. Con 24 a 24 la partita è pari.','I semi catturati si mettono nel proprio granaio. Qui Sud ne ha 22 e Nord 17: mancano ancora tre semi a Sud.'],
+  sc:{b:[0,3,0,1,0,2,0,0,2,0,0,1],g:[22,17],chips:[chipH('25 semi: vittoria'),chipH('24 a 24: pareggio')]}},
+ {t:'La semina',p:['Si sceglie una casa propria non vuota, si prendono <b>tutti</b> i semi e li si distribuisce uno per casa, in senso antiorario. La casa di partenza resta vuota.','Qui Sud gioca la casa B, che ha 4 semi: li lascia in A, f, e e d.'],
+  sc:{b:OPEN,turn:0,play:4,arrows:[[4,5,6,7,8]],chips:[chipH('B: 4 semi → A, f, e, d')],res:[resc('La casa B resta vuota')]}},
+ {t:'La dodicesima buca',p:['Con 12 semi o più la semina fa un giro completo. La casa di partenza <b>non riceve semi</b>: viene saltata, e il dodicesimo seme cade nella casa successiva.','Qui Nord gioca la casa a con 14 semi: la casa a resta vuota anche dopo il giro.'],
+  sc:{b:T([14,1,1,1,0,0],[3,3,3,0,0,0]),turn:1,play:11,arrows:[[11,0,1,2,3,4,5,6,7,8,9,10]],chips:[chipH('a: 14 semi')],res:[resc('La casa a è saltata','win')]}},
+ {t:'La cattura',p:['Se l\'ultimo seme cade in una casa <b>avversaria</b> e la porta a <b>2 o 3</b> semi, quella casa viene catturata: i semi vanno nel granaio.','Qui Sud gioca C (4 semi). L\'ultimo cade in e, che passa da 2 a 3: cattura 3 semi.'],
+  sc:{b:T([1,5,1,1,2,3],[0,2,1,4,0,0]),turn:0,play:3,arrows:[[3,4,5,6,7]],marks:[{h:7,k:'cap'}],chips:[chipH('e: 2 + 1 = 3')],res:[resc('Cattura 3 semi','win')]}},
+ {t:'La catena di catture',p:['Dopo la prima cattura si guardano, a ritroso, le case avversarie precedenti: se hanno anch\'esse 2 o 3 semi vengono catturate, finché la catena si interrompe.','Qui Sud gioca C (7 semi). Cattura b, c e d, ma non f: la casa e, vuota prima della semina, ne ha solo 1 e interrompe la catena.'],
+  sc:{b:T([0,1,2,1,0,1],[0,0,0,7,0,0]),turn:0,play:3,arrows:[[3,4,5,6,7,8,9,10]],marks:[{h:10,k:'cap'},{h:9,k:'cap'},{h:8,k:'cap'},{h:7,k:'no'}],chips:[chipH('b 2 · c 3 · d 2')],res:[resc('Cattura 7 semi','win')]}},
+ {t:'Quando non si cattura',p:['Una casa con <b>4 semi o più</b> non si cattura, e nemmeno una casa che resta a 0 o a 1. Si cattura soltanto nelle case dell\'avversario, mai nelle proprie.','Qui Sud gioca B (2 semi). L\'ultimo cade in f, che passa da 3 a 4: nessuna cattura.'],
+  sc:{b:[0,0,0,0,2,0,3,0,0,0,0,0],turn:0,play:4,arrows:[[4,5,6]],marks:[{h:6,k:'no'}],chips:[noc('f: 3 + 1 = 4')],res:[resc('Nessuna cattura')]}},
+ {t:'Dar da mangiare',p:['Se le case dell\'avversario sono tutte vuote, bisogna giocare una casa che gli dia <b>almeno un seme</b>.','Qui Nord gioca il suo ultimo seme e resta senza semi. Sud può giocare solo A o C: B ed E non arrivano nella fila avversaria.','Se nessuna mossa può dargli semi, chi muove cattura tutti i semi rimasti e la partita finisce.'],
+  sc:{b:T([1,0,0,0,0,0],[0,1,0,3,1,3]),turn:1,play:11,marksAfter:true,marks:[{h:5,k:'ok'},{h:3,k:'ok'},{h:4,k:'no'},{h:1,k:'no'}],chips:[okc('A e C danno semi'),noc('B ed E no')]}},
+ {t:'Il grand slam',p:['Un <b>grand slam</b> è una mossa che catturerebbe tutti i semi dell\'avversario. Nel wari abapa la mossa è valida, ma <b>non si cattura nulla</b>.','Qui Sud gioca A (17 semi) e farebbe il giro due volte. Le case di Nord arriverebbero a 2 e 3 semi, ma catturarle tutte è vietato.','Nella variante dei Caraibi invece si cattura tutto, e poi si deve dare da mangiare all\'avversario.'],
+  sc:{b:T([0,1,1,0,0,0],[0,0,0,1,1,17]),turn:0,play:5,chips:[noc('Abapa: nessuna cattura'),chipH('Caraibi: si cattura tutto')],res:[resc('Nessun seme catturato')]}},
+ {t:'Fine della partita',p:['La partita finisce quando uno raggiunge <b>25 semi</b>, oppure è 24 a 24.','Può accadere che nessuno riesca più a catturare e le posizioni si ripetano all\'infinito: è lo <b>stallo</b>. Qui ciascuno prende i semi della propria fila.'],
+  sc:{b:T([0,0,0,0,0,1],[1,0,0,0,0,0]),arrows:[[0,1,2,3,4,5,6]],chips:[chipH('Posizione ripetuta 3 volte'),chipH('Ciascuno prende la propria fila')]}},
+ {t:'Strategia: mosse in mano',p:['Le <b>mosse in mano</b> sono le mosse che non danno semi all\'avversario. Chi ne ha di più può tenere i propri semi e costringere l\'altro a dare i suoi.','Qui Sud ha 7 mosse in mano e Nord 5: Sud può vincere tutti i semi sulla tavola.'],
+  sc:{b:T([0,0,1,1,0,0],[0,1,1,0,0,0]),chips:[chipH('Sud: 7 mosse in mano'),chipH('Nord: 5 mosse in mano')]}},
+ {t:'Strategia: davanti prima',p:['Conviene muovere prima i semi <b>davanti</b> (A e a) e poi quelli dietro: ogni seme che finisce su un altro, <b>raddoppiando</b> una casa, fa perdere due mosse in mano.','Qui Sud muove E su D: D arriva a 2 semi e le mosse in mano scendono da 7 a 5.'],
+  sc:{b:T([0,0,1,1,0,0],[0,1,1,0,0,0]),turn:0,play:1,arrows:[[1,2]],chips:[noc('Raddoppio: -2 mosse in mano')]}},
+ {t:'Strategia: la casa grande',p:['Una casa da 12-17 semi fa il giro e torna nella fila avversaria, dove trova case vuote o con un seme e le cattura a catena.','Qui Nord gioca b con 16 semi: dopo un giro completo cattura C e D (5 semi), ma non E, che ne ha 4.','Difesa: tenere <b>due semi</b> in una casa, così la casa grande la porta a 4. Meglio ancora, preparare una piccola casa che ricatturi subito.'],
+  sc:{b:T([0,16,0,0,0,0],[0,2,1,0,0,0]),turn:1,play:10,marks:[{h:3,k:'cap'},{h:2,k:'cap'},{h:1,k:'no'}],chips:[chipH('b: 16 semi')],res:[resc('Cattura 5 semi','win')]}},
+ {t:'Strategia: l\'apertura',p:['All\'inizio si aprono le case dal <b>davanti</b> verso il dietro. La mossa più sicura è <b>A</b>.','Evita di aprire più di due case adiacenti: lasci catture a catena. Ma aprire una casa sì e una no (A, C, E) dà poca flessibilità.'],
+  sc:{b:OPEN,turn:0,play:5,arrows:[[5,6,7,8,9]],chips:[chipH('A: 4 semi → f, e, d, c')]}},
+ {t:'Come si gioca qui',p:['Le impostazioni permettono di scegliere avversario, livello, chi comincia, regola del grand slam e tavoliere con o senza granai.'],
+  sc:{type:'flow',steps:['Tocca una delle tue case evidenziate: appare l\'anteprima della semina, con il numero di semi che cadono in ogni casa.','Verde: l\'ultimo seme. Rosso: le case che verrebbero catturate.','Tocca di nuovo la stessa casa per confermare, oppure un\'altra casa per cambiare.','«Suggerimento» chiede al computer la mossa che ritiene migliore.']}}
+];
+const SL_EN=[{"t": "The board", "p": ["The board has <b>twelve houses</b> in two rows of six, plus (if enabled) two side stores for captured seeds. Wari means “houses”.", "<b>South</b> controls the bottom row (A-F), <b>North</b> the top row (a-f). There are 48 seeds, <b>four per house</b>. Players alternate turns and move one house at a time.", "Sowing is <b>counterclockwise</b>: along South's row you go to the right, then up and on along North's row to the left."], "chips": ["South: A-F", "North: a-f", "Counterclockwise sowing"]}, {"t": "The goal", "p": ["The winner is whoever <b>captures more seeds</b> than the opponent. Since there are 48 seeds, <b>25</b> are enough. At 24 to 24 the game is drawn.", "Captured seeds go into your own store. Here South has 22 and North 17: South still needs three more seeds."], "chips": ["25 seeds: win", "24 to 24: draw"]}, {"t": "Sowing", "p": ["Choose one of your own non-empty houses, take <b>all</b> its seeds and drop them one per house, counterclockwise. The starting house is left empty.", "Here South plays house B, which has 4 seeds: it drops them in A, f, e and d."], "chips": ["B: 4 seeds → A, f, e, d"], "res": ["House B is left empty"]}, {"t": "The twelfth house", "p": ["With 12 seeds or more the sowing makes a full lap. The starting house <b>receives no seeds</b>: it is skipped, and the twelfth seed lands in the next house.", "Here North plays house a with 14 seeds: house a stays empty even after the lap."], "chips": ["a: 14 seeds"], "res": ["House a is skipped"]}, {"t": "Capturing", "p": ["If the last seed lands in an <b>opponent's</b> house and brings it to <b>2 or 3</b> seeds, that house is captured: its seeds go into your store.", "Here South plays C (4 seeds). The last one lands in e, which goes from 2 to 3: 3 seeds are captured."], "chips": ["e: 2 + 1 = 3"], "res": ["Captures 3 seeds"]}, {"t": "The capture chain", "p": ["After the first capture, look back at the preceding opponent houses: if they also hold 2 or 3 seeds they are captured too, until the chain is broken.", "Here South plays C (7 seeds). It captures b, c and d, but not e: that house, empty before the sowing, has only 1 seed and breaks the chain."], "chips": ["b 2 · c 3 · d 2"], "res": ["Captures 7 seeds"]}, {"t": "When there is no capture", "p": ["A house with <b>4 seeds or more</b> cannot be captured, nor can a house left with 0 or 1. Captures are made only in the opponent's houses, never in your own.", "Here South plays B (2 seeds). The last one lands in f, which goes from 3 to 4: no capture."], "chips": ["f: 3 + 1 = 4"], "res": ["No capture"]}, {"t": "Feeding the opponent", "p": ["If all the opponent's houses are empty, you must play a house that gives them <b>at least one seed</b>.", "Here North plays their last seed and is left with none. South can only play A or C: B and E do not reach the opponent's row.", "If no move can give them seeds, the player to move captures all the remaining seeds and the game ends."], "chips": ["A and C give seeds", "B and E do not"]}, {"t": "The grand slam", "p": ["A <b>grand slam</b> is a move that would capture all of the opponent's seeds. In abapa wari the move is legal, but <b>nothing is captured</b>.", "Here South plays A (17 seeds) and would lap the board twice. North's houses would end up with 2 and 3 seeds, but capturing them all is forbidden.", "In the Caribbean variant, by contrast, everything is captured, and the capturing player must then feed the opponent."], "chips": ["Abapa: no capture", "Caribbean: everything is captured"], "res": ["No seeds captured"]}, {"t": "End of the game", "p": ["The game ends when a player reaches <b>25 seeds</b>, or at 24 to 24.", "It can happen that nobody can capture any more and positions repeat endlessly: this is a <b>stalemate</b>. Here each player takes the seeds on their own row."], "chips": ["Position repeated 3 times", "Each takes their own row"]}, {"t": "Strategy: moves in hand", "p": ["<b>Moves in hand</b> are moves that give no seeds to the opponent. Whoever has more of them can keep their own seeds and force the other to give away theirs.", "Here South has 7 moves in hand and North 5: South can win all the seeds on the board."], "chips": ["South: 7 moves in hand", "North: 5 moves in hand"]}, {"t": "Strategy: front first", "p": ["It is best to move the seeds at the <b>front</b> (A and a) first, then those behind: every seed that lands on another, <b>doubling</b> a house, costs two moves in hand.", "Here South moves E onto D: D reaches 2 seeds and moves in hand drop from 7 to 5."], "chips": ["Doubling: -2 moves in hand"]}, {"t": "Strategy: the big house", "p": ["A house of 12-17 seeds makes a lap and returns to the opponent's row, where it finds empty houses or houses with one seed and captures them in a chain.", "Here North plays b with 16 seeds: after a full lap it captures C and D (5 seeds), but not E, which has 4.", "Defence: keep <b>two seeds</b> in a house, so the big house brings it to 4. Better still, prepare a small house that can recapture immediately."], "chips": ["b: 16 seeds"], "res": ["Captures 5 seeds"]}, {"t": "Strategy: the opening", "p": ["At the start, open houses from the <b>front</b> towards the back. The safest move is <b>A</b>.", "Avoid opening more than two adjacent houses: you leave chain captures. But opening every other house (A, C, E) gives little flexibility."], "chips": ["A: 4 seeds → f, e, d, c"]}, {"t": "How to play here", "p": ["The settings let you choose the opponent, level, who starts, the grand slam rule, and a board with or without stores."], "steps": ["Tap one of your highlighted houses: the sowing preview appears, with the number of seeds landing in each house.", "Green: the last seed. Red: the houses that would be captured.", "Tap the same house again to confirm, or another house to change.", "“Hint” asks the computer for the move it considers best."]}];
+function chipTx(c,en){return c.replace(/[^>]*<\/span>$/,en+'</span>');}
+function locSL(){
+  if(LANG!=='en')return SL_IT;
+  return SL_IT.map((s,i)=>{const e=SL_EN[i],sc=Object.assign({},s.sc);
+    if(sc.chips)sc.chips=sc.chips.map((c,k)=>chipTx(c,e.chips[k]));
+    if(sc.res)sc.res=sc.res.map((c,k)=>chipTx(c,e.res[k]));
+    if(sc.steps)sc.steps=e.steps;
+    return {t:e.t,p:e.p,sc};});
 }
-const KROWS=()=>[[1,_('Muovi di 1 e rilancia','Move 1 and throw again'),_('una faccia bianca','one white face'),4],[2,_('Muovi di 2 e passa la mano','Move 2 and pass the turn'),_('due facce bianche','two white faces'),6],[3,_('Muovi di 3 e passa la mano','Move 3 and pass the turn'),_('tre facce bianche','three white faces'),4],[4,_('Muovi di 4 e rilancia','Move 4 and throw again'),_('quattro facce bianche','four white faces'),1],[6,_('Muovi di 6 e rilancia','Move 6 and throw again'),_('nessuna faccia bianca','no white faces'),1]]
-  .map(a=>({icon:stkH([0,1,2,3].map(i=>i<(a[0]===6?0:a[0]))),big:String(a[0]),t:a[1],s:a[2],pt:a[3]+_(' volte su 16',' in 16'),bar:a[3]/6*100}));
-const UROWS=()=>[[1,_('Muovi di 1 e rilancia','Move 1 and throw again')],[2,_('Muovi di 2 e passa la mano','Move 2 and pass the turn')],[3,_('Muovi di 3 e passa la mano','Move 3 and pass the turn')],[4,_('Muovi di 4 e rilancia','Move 4 and throw again')],[5,_('Muovi di 5 e rilancia','Move 5 and throw again')],[6,_('X: si passa senza muovere','X: the turn passes without moving')]]
-  .map(a=>({icon:dieH(a[0]),big:a[0]===6?'X':String(a[0]),t:a[1],s:a[0]===6?_('vale meno di qualsiasi altro tiro','ranks below any other throw'):'',pt:_('1 volta su 6','1 in 6'),bar:100}));
-
-function slides(U){
-  const n=U?5:7, ev=[], od=[], N0=_('Avorio','Ivory'), N1=_('Ebano','Ebony');
-  for(let i=1;i<=n;i++){ev.push(2*i);od.push(2*i-1);}
-  const RC=(v)=>chipH(_('Tiro','Throw')+' <b>'+(U?_('dado ','die ')+v:(v===6?_('0 facce bianche · 6','0 white faces · 6'):v+(v===1?_(' faccia bianca · ',' white face · '):_(' facce bianche · ',' white faces · '))+v))+'</b>');
-  const A=(seq,o,k,dy)=>({o:o||0,seq,k,dy});
-  const sc=(o)=>Object.assign({type:'board'},o);
-  const L=[];
-  L.push({t:_('Il tavoliere','The board'),p:[
-    _('Il tavoliere ha <b>30 caselle</b> in tre file da dieci. Il percorso è a serpentina: la prima fila va da sinistra a destra (1-10), la seconda da destra a sinistra (11-20), la terza da sinistra a destra (21-30).','The board has <b>30 squares</b> in three rows of ten. The path is serpentine: the first row runs left to right (1-10), the second right to left (11-20), the third left to right (21-30).'),
-    _('Le ultime cinque caselle hanno disegni e regole speciali: 15 (ankh), 26, 27 (acqua), 28, 29 (occhio di Horus) e 30 (disco solare).','The last five squares have special designs and rules: 15 (ankh), 26, 27 (water), 28, 29 (eye of Horus) and 30 (sun disc).')],
-    sc:sc({arrows:[A(rg(1,10)),A(rg(11,20)),A(rg(21,30))],chips:[chipH(_('Percorso a serpentina: dalla 1 alla 30','Serpentine path: from 1 to 30')),chipH(_('Caselle speciali: 15, 26, 27, 28, 29, 30','Special squares: 15, 26, 27, 28, 29, 30'))]})});
-  L.push({t:_('Disposizione iniziale','Initial setup'),p:[
-    _('Ogni giocatore ha ','Each player has ')+(U?_('<b>cinque</b>','<b>five</b>'):_('<b>sette</b>','<b>seven</b>'))+_(' pedine (',' pieces (')+(U?_('le regole di Kendall e Bell ne prevedono 5; si può scegliere anche 7','the Kendall and Bell rules provide for 5; 7 can also be chosen'):_('le regole CEMEA ne prevedono 7; si può scegliere anche 5','the CEMEA rules provide for 7; 5 can also be chosen'))+_('). Le pedine partono <b>alternate</b> sulle prime caselle: ','). The pieces start <b>alternating</b> on the first squares: ')+(U?_('dalla 1 alla 10','from 1 to 10'):_('dalla 1 alla 14','from 1 to 14'))+'.',
-    _('Chi comincia occupa le caselle <b>pari</b>, l\'altro le dispari. Qui comincia Avorio.','The player who starts occupies the <b>even</b> squares, the other the odd ones. Here Ivory starts.')],
-    sc:sc({b:ev,r:od,chips:[chipH(N0+_(': caselle pari',': even squares')),chipH(N1+_(': caselle dispari',': odd squares'))]})});
-  L.push({t:U?_('Il dado','The die'):_('I quattro legnetti','The four casting sticks'),p:U
-    ?[_('Si usa un dado a sei facce con segni da 1 a 5 e una X. La <b>X</b> vale meno di tutti e non fa muovere.','A six-sided die is used, with marks from 1 to 5 and an X. The <b>X</b> ranks lowest and does not allow a move.'),_('I punteggi <b>1, 4 e 5</b> permettono di muovere e di <b>rilanciare</b>. Con <b>2 e 3</b> si muove e passa la mano.','Scores <b>1, 4 and 5</b> allow a move and a <b>further throw</b>. With <b>2 and 3</b> the player moves and passes the turn.')]
-    :[_('Si lanciano quattro legnetti a mezzo cilindro: la parte convessa è nera, quella piana bianca. Il punteggio è il numero di <b>facce bianche</b>; se sono tutte nere vale <b>6</b>.','Four half-cylinder casting sticks are thrown: the convex side is black, the flat side white. The score is the number of <b>white faces</b>; if all are black it counts <b>6</b>.'),_('Con <b>1, 4 e 6</b> si muove e si <b>rilancia</b>. Con <b>2 e 3</b> si muove e si passa la mano. Con dado a sei facce si ammette anche il 5.','With <b>1, 4 and 6</b> the player moves and <b>throws again</b>. With <b>2 and 3</b> the player moves and passes the turn. With a six-sided die, 5 is also allowed.')],
-    sc:{type:'dice',rows:U?UROWS():KROWS()}});
-  L.push({t:_('Chi comincia','Who starts'),p:U
-    ?[_('Ogni giocatore lancia il dado e comincia chi ottiene il punteggio più alto (la X vale meno di tutti). In caso di parità si ripete.','Each player throws the die and the one with the highest score starts (X ranks lowest). A tie is thrown again.'),_('Chi comincia occupa le caselle pari e la <b>prima mossa spetta alla pedina in casella 10</b>, la più avanzata.','The starting player occupies the even squares and the <b>first move belongs to the piece on square 10</b>, the most advanced.')]
-    :[_('I giocatori lanciano a turno i legnetti finché uno ottiene 1. Chi ci riesce comincia, e occupa le caselle pari.','Players throw the sticks in turn until one gets 1. That player starts and occupies the even squares.'),_('Altre versioni assegnano la prima mossa a chi ottiene il punteggio più alto.','Other versions give the first move to the player with the highest score.')],
-    sc:sc({b:ev,r:od,chips:U?[RC(4),chipH(N1+' <b>'+_('dado ','die ')+'2</b>','res'),resc(_('Comincia ','')+N0+_('',' starts'),'win')]:[chipH(N1+' <b>3</b>'),chipH(N0+' <b>2</b>'),chipH(N1+' <b>1</b>'),resc(_('Comincia ','')+N1+_('',' starts'),'win')]})});
-  L.push({t:_('Muovere una pedina','Moving a piece'),p:[_('Si sceglie una pedina e la si fa <b>avanzare</b> esattamente del punteggio ottenuto, saltando le altre pedine. Qui Avorio muove di 3.','Choose a piece and <b>advance</b> it exactly the number of squares scored, jumping over other pieces. Here Ivory moves 3.'),_('Con 2 e 3 il turno passa all\'avversario.','With 2 and 3 the turn passes to the opponent.')],
-    sc:sc({b:[5],r:[11],roll:RC(3),arrows:[A([5,6,7,8])],marks:[{o:0,sq:8,k:'ok'}],after:{b0:8},res:[resc(_('Il turno passa','The turn passes'))]})});
-  L.push({t:_('Rilanciare','Throwing again'),p:[_('Con ','With ')+(U?_('1, 4 o 5','1, 4 or 5'):_('1, 4 o 6','1, 4 or 6'))+_(' si muove una pedina e si <b>lancia ancora</b>, anche più volte di seguito. Qui Avorio muove di 4 e rilancia.',' a piece is moved and the player <b>throws again</b>, even several times in a row. Here Ivory moves 4 and throws again.')],
-    sc:sc({b:[5],r:[11],roll:RC(4),arrows:[A([5,6,7,8,9])],marks:[{o:0,sq:9,k:'ok'}],after:{b0:9},res:[resc(N0+_(' rilancia',' throws again'),'win')]})});
-  L.push({t:_('Attaccare','Attacking'),p:[_('Se il movimento termina su una pedina avversaria si <b>attacca</b>: le due pedine si scambiano di posto. L\'avversaria retrocede fino alla casella da cui è partita l\'attaccante.','If the move ends on an opposing piece, the player <b>attacks</b>: the two pieces swap places. The attacked piece goes back to the square the attacker started from.')],
-    sc:sc({b:[5],r:[8],roll:RC(3),arrows:[A([5,6,7,8])],marks:[{o:0,sq:8,k:'cap'}],after:{b0:8,r0:5},res:[resc(_('Le pedine si scambiano di posto','The pieces swap places'))]})});
-  L.push({t:_('Il muro di due pedine','The wall of two pieces'),p:[_('Due pedine dello stesso colore in <b>caselle contigue</b> formano un muro: non possono essere attaccate, ma si possono <b>superare</b>.','Two pieces of the same colour on <b>adjacent squares</b> form a wall: they cannot be attacked, but they can be <b>passed</b>.'),_('Qui Avorio non può fermarsi sull\'8, ma con un 4 supera il muro e arriva in 9.','Here Ivory cannot stop on 8, but with a 4 passes the wall and reaches 9.')],
-    sc:sc({b:[5],r:[7,8],roll:RC(4),arrows:[A([5,6,7,8,9])],marks:[{o:0,sq:8,k:'no'},{o:0,sq:9,k:'ok'}],after:{b0:9},chips:[noc(_('Attaccare una pedina del muro','Attacking a piece of the wall')),okc(_('Superarlo','Passing it'))]})});
-  L.push({t:_('Il muro di tre pedine','The wall of three pieces'),p:[_('Tre pedine dello stesso colore in tre caselle consecutive formano un <b>muro invalicabile</b>: non si può né attaccarlo né superarlo.','Three pieces of the same colour on three consecutive squares form an <b>impassable wall</b>: it can be neither attacked nor passed.'),_('Qui Avorio con un 4 dovrebbe oltrepassare le caselle 6-8: la mossa non è consentita.','Here Ivory, with a 4, would have to pass squares 6-8: the move is not allowed.')],
-    sc:sc({b:[5],r:[6,7,8],roll:RC(4),marks:[{o:0,sq:9,k:'no'}],arrows:[A([5,6,7,8,9],0,'k')],chips:[noc(_('5 → 9: muro invalicabile','5 → 9: impassable wall'))]})});
-  L.push({t:_('Non su una propria pedina','Not onto your own piece'),p:[_('Due pedine dello stesso colore non possono occupare la stessa casella: la mossa che termina su una propria pedina non si può fare.','Two pieces of the same colour cannot occupy the same square: a move ending on one of your own pieces cannot be made.'),_('Qui la pedina in 4 non può muovere di 3 (finirebbe sulla 7), ma l\'altra sì.','Here the piece on 4 cannot move 3 (it would end on 7), but the other one can.')],
-    sc:sc({b:[4,7],roll:RC(3),marks:[{o:0,sq:7,k:'no'},{o:0,sq:10,k:'ok'}],arrows:[A([7,8,9,10])],after:{b1:10},chips:[noc('4 → 7'),okc('7 → 10')]})});
-  L.push({t:_('Tiro nullo: si retrocede','Null throw: moving back'),p:[_('Se nessuna pedina può avanzare di quanto indicato dal punteggio, il giocatore <b>fa retrocedere</b> una pedina a sua scelta del numero di caselle ottenuto (su una casella libera).','If no piece can advance by the score, the player <b>moves back</b> a piece of their choice by the number of squares scored (onto a free square).'),_('Se neppure questo è possibile, passa il turno.','If even that is not possible, the turn passes.')],
-    sc:sc({b:[9],r:[10,11,12],roll:RC(4),arrows:[A([9,8,7,6,5],0,'k')],after:{b0:5},res:[resc(_('La pedina retrocede di 4','The piece moves back 4'))]})});
-  L.push({t:_('La casa della rinascita','The House of Rebirth'),p:[_('La casella <b>15</b> (ankh) è la casa della rinascita: la pedina che la occupa <b>non può essere attaccata</b>. Lo stesso vale per la 26, la 28, la 29 e la 30.','Square <b>15</b> (ankh) is the House of Rebirth: a piece on it <b>cannot be attacked</b>. The same holds for 26, 28, 29 and 30.')],
-    sc:sc({b:[12],r:[15],roll:RC(3),arrows:[A([12,13,14,15],0,'k')],marks:[{o:0,sq:15,k:'no'}],chips:[noc(_('Attaccare una pedina in 15','Attacking a piece on 15'))]})});
-  L.push({t:_('La casa dell\'abbondanza','The House of Abundance'),p:[_('La casella <b>26</b> è di buon augurio e protegge la pedina. Dalla 26 un <b>1</b> sposterebbe in 27, la casa della malasorte: con un 1 la pedina può invece <b>saltarla</b> e arrivare in 28.','Square <b>26</b> is auspicious and protects the piece. From 26, a <b>1</b> would move to 27, the House of Misfortune: with a 1 the piece can instead <b>skip</b> it and reach 28.'),_('(Le fonti non precisano il salto: qui è interpretato come passaggio 26 → 28.)','(The sources do not specify the skip: here it is interpreted as a passage 26 → 28.)')],
-    sc:sc({b:[26],roll:RC(1),arrows:[A([26,28])],marks:[{o:0,sq:27,k:'no'},{o:0,sq:28,k:'ok'}],after:{b0:28},chips:[noc('26 → 27'),okc(_('26 → 28 (salto)','26 → 28 (skip)'))]})});
-  L.push({t:_('La casa della malasorte','The House of Misfortune'),p:[_('Una pedina che termina in <b>27</b> (acqua) deve tornare indietro fino alla casa della rinascita, la <b>15</b>.','A piece that ends on <b>27</b> (water) must go back to the House of Rebirth, <b>15</b>.'),_('Passare sopra la 27 senza fermarsi non ha alcun effetto.','Passing over 27 without stopping has no effect.')],
-    sc:sc({b:[24,9],roll:RC(3),arrows:[A([24,25,26,27]),A([27,15],0,'k')],marks:[{o:0,sq:27,k:'no'},{o:0,sq:15,k:'ok'}],after:{b0:15},res:[resc(_('La pedina torna in 15','The piece returns to 15'))]})});
-  L.push({t:_('La 15 è occupata','15 is occupied'),p:[_('Se la casa della rinascita è occupata da una pedina avversaria, la pedina resta in 27 e il giocatore rimane <b>bloccato con tutte le sue pedine</b> finché non ottiene <b>4</b>.','If the House of Rebirth is occupied by an opposing piece, the piece stays on 27 and the player remains <b>blocked with all their pieces</b> until a <b>4</b> is thrown.'),_('(Se la 15 è occupata da una propria pedina, la pedina riparte dalla prima casella libera.)','(If 15 is occupied by one of the player\'s own pieces, the piece restarts from the first free square.)')],
-    sc:sc({b:[24,9],r:[15],roll:RC(3),arrows:[A([24,25,26,27])],marks:[{o:0,sq:27,k:'no'}],after:{b0:27},res:[resc(N0+_(' è bloccato',' is blocked'))]})});
-  L.push({t:_('Bloccato: serve un 4','Blocked: a 4 is needed'),p:[_('Con il 4 la pedina bloccata <b>esce dal gioco</b>, e il giocatore lancia ancora. Con qualsiasi altro punteggio il turno passa senza muovere nulla, nemmeno all\'indietro.','With a 4 the blocked piece <b>leaves the game</b>, and the player throws again. With any other score the turn passes without moving anything, not even backwards.')],
-    sc:sc({b:[27,9],r:[15],ro:0,roll:RC(4),arrows:[A([27,28,29,30,'X'])],after:{b0:31},res:[resc(_('La pedina esce dal gioco','The piece leaves the game')),resc(N0+_(' rilancia',' throws again'),'win')]})});
-  L.push({t:_('Le caselle 28, 29 e 30','Squares 28, 29 and 30'),p:[_('Le ultime tre caselle sono rifugi: le pedine non possono essere attaccate. I segni <b>III, II, I</b> indicano il punteggio <b>esatto</b> con cui si esce: 3 dalla 28, 2 dalla 29, 1 dalla 30.','The last three squares are refuges: pieces on them cannot be attacked. The marks <b>III, II, I</b> indicate the <b>exact</b> score needed to leave: 3 from 28, 2 from 29, 1 from 30.'),_('Qui la pedina in 28 esce con un 3.','Here the piece on 28 leaves with a 3.')],
-    sc:sc({b:[28],r:[23],roll:RC(3),arrows:[A([28,29,30,'X'])],after:{b0:31},chips:[chipH('28 · III → 3'),chipH('29 · II → 2'),chipH('30 · I → 1')],res:[resc(_('La pedina esce dal tavoliere','The piece leaves the board'))]})});
-  if(U)L.push({t:_('Uscita dalla 30 a inizio turno','Leaving from 30 at the start of a turn'),p:[_('Nelle regole di Kendall e Bell, <b>all\'inizio di un nuovo turno</b> la pedina in casella 30 può uscire senza lanciare, ma solo se il giocatore non ha altre pedine nella <b>prima fila</b> (caselle 1-10).','Under the Kendall and Bell rules, <b>at the start of a new turn</b> the piece on square 30 may leave without throwing, but only if the player has no other pieces in the <b>first row</b> (squares 1-10).'),_('Poi il giocatore lancia normalmente.','Then the player throws as usual.')],
-    sc:sc({b:[30,16],r:[4],arrows:[A([30,'X'])],after:{b0:31},chips:[okc(_('Nessuna pedina nelle caselle 1-10','No pieces on squares 1-10'))],res:[resc(_('Esce prima del lancio','Leaves before the throw'))]})});
-  L.push({t:_('Vittoria','Victory'),p:[_('Vince chi per primo porta <b>tutte le proprie pedine</b> fuori dal tavoliere.','The first player to bear <b>all their pieces</b> off the board wins.'),_('Secondo le fonti, in epoca antica entrambi i giocatori dovevano comunque concludere: chi era uscito per primo assisteva l\'altro fino alla meta. Questa regola non è implementata.','According to the sources, in antiquity both players had to finish anyway: the one who had left first assisted the other to the goal. This rule is not implemented.')],
-    sc:sc({b:[30],bo:n-1,r:[22,14],roll:RC(1),arrows:[A([30,'X'])],after:{b0:31},res:[resc(N0+_(' vince',' wins'),'win')]})});
-  L.push({t:_('Il turno in sintesi','The turn in brief'),p:[_('Ecco la sequenza di un turno.','Here is the sequence of a turn.')],
-    sc:{type:'flow',steps:[
-     U?_('Lancia il dado. Con la X il turno passa.','Throw the die. With the X the turn passes.'):_('Lancia i quattro legnetti e conta le facce bianche (nessuna: 6).','Throw the four sticks and count the white faces (none: 6).'),
-     _('Muovi una pedina esattamente del punteggio, saltando le altre. Non fermarti su una tua pedina e non superare un muro di tre.','Move a piece exactly the score, jumping over others. Do not stop on one of your own pieces and do not pass a wall of three.'),
-     _('Se finisci su una pedina avversaria non protetta, scambiate le posizioni. Le pedine in 15, 26, 28, 29, 30 e nei muri di due non si attaccano.','If you end on an unprotected opposing piece, you swap places. Pieces on 15, 26, 28, 29, 30 and in walls of two cannot be attacked.'),
-     _('Se nessuna pedina può avanzare, ne retrocedi una; se non è possibile, passa il turno.','If no piece can advance, you move one back; if that is not possible, the turn passes.'),
-     _('Finire in 27 riporta in 15 (o blocca fino al 4 se la 15 è occupata dall\'avversario). Dalla 26, un 1 salta la 27.','Ending on 27 sends you back to 15 (or blocks you until a 4 if the opponent occupies 15). From 26, a 1 skips 27.'),
-     _('Dalla 28 esci con 3, dalla 29 con 2, dalla 30 con 1','You leave from 28 with a 3, from 29 with a 2, from 30 with a 1')+(U?_(' (o a inizio turno, se non hai pedine nella prima fila)',' (or at the start of the turn, if you have no pieces in the first row)'):'')+'.',
-     (U?_('Con 1, 4 o 5','With 1, 4 or 5'):_('Con 1, 4 o 6','With 1, 4 or 6'))+_(' rilanci, con 2 o 3 passi la mano. Vince chi porta fuori tutte le pedine.',' you throw again, with 2 or 3 you pass the turn. The first to bear all pieces off wins.')]}});
-  return L;
-}
-let TUTS={kendall:slides(false),uninerd:slides(true)};
-
-let tutRules='kendall', tutI=0, tutS=null, tutTimer=0, tutOpener=null;
-const ARR_MK=['arrh0','arrh1'];
-function pieceEl(o){
-  const g=document.createElementNS(NS,'g'); g.setAttribute('class','piece p'+o);
-  g.innerHTML=pieceInner(o); return g;
-}
-function tutLayout(S,pos){
-  const used=[new Set(),new Set()];
-  S.pcs.forEach(pc=>{ if(pos[pc.id]===31&&S.slot[pc.id]!==undefined)used[pc.o].add(S.slot[pc.id]); else if(pos[pc.id]!==31)delete S.slot[pc.id]; });
-  S.pcs.forEach(pc=>{ if(pos[pc.id]!==31||S.slot[pc.id]!==undefined)return; let i=0; while(used[pc.o].has(i))i++; used[pc.o].add(i); S.slot[pc.id]=i; });
-  S.pcs.forEach(pc=>{
-    const p=pos[pc.id]; let q,s=1;
-    if(p===31){q=slot(pc.o,S.slot[pc.id]);s=SC;} else q=sqXY(p);
-    pc.el.style.transform='translate('+q.x+'px,'+q.y+'px) scale('+s+')';
-  });
-}
-function arrowsSVG(S,list){
-  return list.map(a=>{
-    const pts=a.seq.map(v=>{
-      let q;
-      if(v==='X'){const u=new Set();S.pcs.forEach(pc=>{if(pc.o===a.o&&S.before[pc.id]===31)u.add(S.slot[pc.id]);});let i=0;while(u.has(i))i++;q=slot(a.o,i);}
-      else q=sqXY(v);
-      return q.x+' '+(q.y+(a.dy||0));
-    });
-    const col=a.k==='k'?'#ff7a59':(a.o===0?'#fff0bd':'#12181f'), mk=a.k==='k'?'arrhk':ARR_MK[a.o];
-    return '<path d="M'+pts.join('L')+'" fill="none" stroke="'+col+'" stroke-width="90" stroke-linejoin="round" stroke-linecap="round" opacity=".92" marker-end="url(#'+mk+')"/>';
+let SL=locSL();
+let tutI=0, tutTok=0, tutTimer=0, tutOpener=null, tutS=null;
+function markSVG(B,list){
+  return list.map(m=>{
+    const q=B.pos(m.h),tr='translate('+q.x+' '+q.y+')';
+    if(m.k==='ok')return '<g transform="'+tr+'"><circle r="700" class="mk mk-ok"/><path class="mk-g ok" d="M-230 20L-60 190L250 -190"/></g>';
+    if(m.k==='no')return '<g transform="'+tr+'"><circle r="700" class="mk mk-no"/><path class="mk-g no" d="M-210 -210L210 210M210 -210L-210 210"/></g>';
+    return '<g transform="'+tr+'"><circle r="700" class="mk mk-cap"/></g>';
   }).join('');
 }
-function marksSVG(list){
-  return list.map(m=>{
-    const q=sqXY(m.sq), tr='translate('+q.x+' '+q.y+')';
-    if(m.k==='ok')return '<g transform="'+tr+'"><circle r="470" class="mk mk-ok"/><path class="mk-g ok" d="M-190 10L-50 160L200 -150"/></g>';
-    if(m.k==='no')return '<g transform="'+tr+'"><circle r="470" class="mk mk-no"/><path class="mk-g no" d="M-170 -170L170 170M170 -170L-170 170"/></g>';
-    return '<g transform="'+tr+'"><circle r="480" class="mk mk-cap"/></g>';
+function arrowSVG(B,list){
+  return list.map(seq=>{
+    const pts=seq.map(h=>{const q=B.pos(h);return q.x+' '+q.y;});
+    return '<path d="M'+pts.join('L')+'" fill="none" stroke="#fff0bd" stroke-width="70" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="1 170" opacity=".9" marker-end="url(#arrh0)"/>';
   }).join('');
 }
 function tutScene(sc){
-  const fig=$('#tutFig'); fig.className='tut-fig'; clearTimeout(tutTimer); tutS=null;
-  if(sc.type==='dice'){fig.innerHTML=diceTable(sc.rows);return;}
+  const fig=$('#tutFig'); fig.className='tut-fig'; clearTimeout(tutTimer); tutTok++; tutS=null;
   if(sc.type==='flow'){fig.innerHTML='<ol class="flow">'+sc.steps.map(s=>'<li><span>'+s+'</span></li>').join('')+'</ol>';return;}
-  const pcs=[];
-  [['b',0,sc.b||[],sc.bo||0],['r',1,sc.r||[],sc.ro||0]].forEach(a=>{
-    let i=0; a[2].forEach(p=>pcs.push({id:a[0]+(i++),o:a[1],pos:p}));
-    for(let j=0;j<a[3];j++)pcs.push({id:a[0]+(i++),o:a[1],pos:31});
-  });
-  const before={}; pcs.forEach(pc=>before[pc.id]=pc.pos);
-  const after=Object.assign({},before,sc.after||{});
-  fig.innerHTML='<svg class="tsvg" viewBox="0 0 10800 5160" role="img" aria-label="'+_('Scenario sul tavoliere','Scenario on the board')+'"><g>'+BL.frame+BL.tiles+BL.glyphs+BL.nums+lblsHTML()+'</g><g class="ta"></g><g class="tp"></g><g class="tm"></g></svg>'
-    +'<div class="tut-chips">'+(sc.roll||'')+(sc.chips||[]).join('')+(sc.res||[]).join('')+'</div>';
-  const svgEl=fig.querySelector('svg'), layer=fig.querySelector('.tp');
-  pcs.forEach(pc=>{pc.el=pieceEl(pc.o);layer.appendChild(pc.el);});
-  const S={pcs,slot:{},before,after,svg:svgEl}; tutS=S;
-  svgEl.classList.add('noanim'); tutLayout(S,before);
-  fig.querySelector('.ta').innerHTML=arrowsSVG(S,sc.arrows||[]);
-  fig.querySelector('.tm').innerHTML=marksSVG(sc.marks||[]);
-  svgEl.getBoundingClientRect(); svgEl.classList.remove('noanim');
-  if(sc.after){
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches){tutLayout(S,after);fig.classList.add('still');}
-    else tutTimer=setTimeout(tutPlay,1100);
-  } else fig.classList.add('still');
+  fig.innerHTML='<svg class="tsvg" role="img" aria-label="'+_('Scenario sul tavoliere','Board scenario')+'"></svg><div class="tut-chips">'+(sc.chips||[]).join('')+(sc.res||[]).join('')+'</div>';
+  const B=Board(fig.querySelector('svg'),true); B.opts(true,true); B.sync(sc.b,sc.g||[0,0]);
+  const marks=()=>B.ann(arrowSVG(B,sc.arrows||[])+markSVG(B,sc.marks||[]));
+  B.ann(arrowSVG(B,sc.arrows||[])+(sc.marksAfter?'':markSVG(B,sc.marks||[])));
+  tutS={B,sc,marks};
+  if(sc.play!=null){ if(calm){tutRun(0);} else tutTimer=setTimeout(()=>tutRun(0),1100); } else fig.classList.add('still');
 }
-function tutPlay(){ if(!tutS)return; tutLayout(tutS,tutS.after); $('#tutFig').classList.add('played'); }
+async function tutRun(delay){
+  const S=tutS; if(!S)return; const sc=S.sc, tok=tutTok, B=S.B, fig=$('#tutFig');
+  const copy=sc.b.slice(), turn=sc.turn||0, r=sow(copy,sc.play,turn,sc.gs||'none');
+  const fx={p:turn,from:sc.play,n:sc.b[sc.play],path:r.path,caps:r.caps,voided:r.void||null,before:sc.b.slice()};
+  B.ann(arrowSVG(B,sc.arrows||[]));
+  await playFx(B,fx,null,()=>tok===tutTok,sc.g||[0,0],false);
+  if(tok!==tutTok)return;
+  S.marks(); fig.classList.add('played');
+}
 function tutReplay(){
-  if(!tutS||!TUTS[tutRules][tutI].sc.after)return;
-  clearTimeout(tutTimer); const S=tutS, fig=$('#tutFig');
-  fig.classList.remove('played'); S.svg.classList.add('noanim'); S.slot={}; tutLayout(S,S.before);
-  S.svg.getBoundingClientRect(); S.svg.classList.remove('noanim');
-  tutTimer=setTimeout(tutPlay,500);
+  if(!tutS||tutS.sc.play==null)return;
+  const sc=tutS.sc; clearTimeout(tutTimer); tutTok++;
+  const fig=$('#tutFig'); fig.classList.remove('played');
+  const B=tutS.B; B.hideHand(); B.clearCls(); B.sync(sc.b,sc.g||[0,0]); B.ann(arrowSVG(B,sc.arrows||[])+(sc.marksAfter?'':markSVG(B,sc.marks||[])));
+  tutTimer=setTimeout(()=>tutRun(0),400);
 }
 function tutRender(){
-  const list=TUTS[tutRules], s=list[tutI];
-  $('#tutStep').textContent=_('Passo ','Step ')+(tutI+1)+_(' di ',' of ')+list.length+' · '+(tutRules==='kendall'?_('regole CEMEA','CEMEA rules'):_('regole di Kendall e Bell','Kendall and Bell rules'));
+  const s=SL[tutI];
+  $('#tutStep').textContent=_('Passo '+(tutI+1)+' di '+SL.length,'Step '+(tutI+1)+' of '+SL.length);
   $('#tutText').innerHTML='<h3>'+s.t+'</h3>'+s.p.map(x=>'<p>'+x+'</p>').join('');
   tutScene(s.sc);
-  $('#tutPrev').disabled=tutI===0; $('#tutNext').disabled=tutI===list.length-1;
-  $('#tutReplay').hidden=!s.sc.after;
-  $('#tutDots').innerHTML=list.map((x,i)=>'<button type="button" data-i="'+i+'" aria-label="'+_('Passo ','Step ')+(i+1)+': '+x.t+'"'+(i===tutI?' aria-current="true"':'')+'></button>').join('');
+  $('#tutPrev').disabled=tutI===0; $('#tutNext').disabled=tutI===SL.length-1;
+  $('#tutReplay').hidden=s.sc.play==null;
+  $('#tutDots').innerHTML=SL.map((x,i)=>'<button type="button" data-i="'+i+'" aria-label="'+_('Passo ','Step ')+(i+1)+': '+x.t+'"'+(i===tutI?' aria-current="true"':'')+'></button>').join('');
   $('.tut-body').scrollTop=0;
 }
-langHooks.push(()=>{TUTS={kendall:slides(false),uninerd:slides(true)}; if(!$('#tut').hidden)tutRender();});
-function tutGo(i){const n=TUTS[tutRules].length; tutI=Math.max(0,Math.min(n-1,i)); tutRender();}
-function openTut(){
-  tutOpener=document.activeElement; tutRules=$('#opts').rules.value; tutI=0;
-  document.querySelectorAll('input[name="trules"]').forEach(r=>r.checked=r.value===tutRules);
-  $('#tut').hidden=false; document.body.style.overflow='hidden'; tutRender(); $('#tutBox').focus();
-}
-function closeTut(){
-  $('#tut').hidden=true; document.body.style.overflow=''; clearTimeout(tutTimer);
-  if(tutOpener&&tutOpener.focus)tutOpener.focus();
-}
+function tutGo(i){tutI=Math.max(0,Math.min(SL.length-1,i));tutRender();}
+function openTut(){tutOpener=document.activeElement;tutI=0;$('#tut').hidden=false;document.body.style.overflow='hidden';tutRender();$('#tutBox').focus();}
+function closeTut(){$('#tut').hidden=true;document.body.style.overflow='';clearTimeout(tutTimer);tutTok++;if(tutOpener&&tutOpener.focus)tutOpener.focus();}
 $('#tutBtn').addEventListener('click',openTut);
 $('#tutClose').addEventListener('click',closeTut);
 $('#tutPrev').addEventListener('click',()=>tutGo(tutI-1));
 $('#tutNext').addEventListener('click',()=>tutGo(tutI+1));
 $('#tutReplay').addEventListener('click',tutReplay);
 $('#tutDots').addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(b)tutGo(+b.dataset.i);});
-$('#tutSeg').addEventListener('change',e=>{tutRules=e.target.value;tutI=0;tutRender();});
 $('#tut').addEventListener('click',e=>{if(e.target.id==='tut')closeTut();});
 document.addEventListener('keydown',e=>{
   if($('#tut').hidden)return;
   if(e.key==='Escape')closeTut();
-  else if(e.key==='ArrowRight'&&!(e.target.name==='trules'))tutGo(tutI+1);
-  else if(e.key==='ArrowLeft'&&!(e.target.name==='trules'))tutGo(tutI-1);
+  else if(e.key==='ArrowRight')tutGo(tutI+1);
+  else if(e.key==='ArrowLeft')tutGo(tutI-1);
   else if(e.key==='Tab'){
-    const f=[...$('#tutBox').querySelectorAll('button:not([disabled]):not([hidden]),input')].filter(x=>x.offsetParent!==null);
+    const f=[...$('#tutBox').querySelectorAll('button:not([disabled]):not([hidden])')].filter(x=>x.offsetParent!==null);
     if(!f.length)return; const a=f[0],z=f[f.length-1];
     if(e.shiftKey&&(document.activeElement===a||document.activeElement===$('#tutBox'))){e.preventDefault();z.focus();}
     else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}
   }
 });
 
+langHooks.push(()=>{SL=locSL();if(!$('#tut').hidden)tutRender();});
 startGame();
 })();
 
 </script>
-
 </body>
 </html>
