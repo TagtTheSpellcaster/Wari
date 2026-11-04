@@ -1,11 +1,12 @@
 # Wari
 
+[English version](README.en.md)
+
 [![Versione](https://img.shields.io/badge/versione-1.1-blue)](#versioni)
 [![Licenza: AGPL v3](https://img.shields.io/badge/licenza-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-222?logo=github)](#pubblicazione-su-github-pages)
 [![HTML5](https://img.shields.io/badge/HTML5-single%20file-E34F26?logo=html5&logoColor=white)](index.html)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES2020-F7DF1E?logo=javascript&logoColor=black)](index.html)
-[![Lingua](https://img.shields.io/badge/lingua-italiano%20%7C%20inglese-green)](#)
 
 Versione per browser del wari (oware, awalé, warri), il più diffuso dei mancala. È una singola pagina HTML, senza build, senza dipendenze e senza installazione. Condivide l'architettura del Gioco Reale di Ur e del Senet: motore di gioco separato dall'interfaccia, animazioni, audio sintetizzato, storia e regole illustrate. Il wari non ha elementi casuali, quindi non ci sono dadi.
 
